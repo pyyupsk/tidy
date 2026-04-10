@@ -37,7 +37,10 @@ export function TopBar() {
           </div>
         )}
         {sheetNames.length > 1 && activeSheet && (
-          <Select value={activeSheet} onValueChange={(v) => v && switchSheet(v)}>
+          <Select
+            value={activeSheet}
+            onValueChange={(v) => v && switchSheet(v)}
+          >
             <SelectTrigger className="h-6 w-auto min-w-[100px] font-mono text-xs">
               <SelectValue />
             </SelectTrigger>

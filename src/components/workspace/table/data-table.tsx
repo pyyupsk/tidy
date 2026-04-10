@@ -69,12 +69,20 @@ export function DataTable() {
                       <td
                         key={h}
                         className={cn(
-                          "max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap border-b border-r border-[#0f0f0f] px-3 py-1.5 font-mono text-zinc-400",
+                          "max-w-[280px] border-b border-r border-[#0f0f0f] px-3 py-1.5 font-mono text-zinc-400",
                           isNull && "bg-red-950/20 italic text-red-500/50",
                         )}
-                        title={isNull ? undefined : String(val)}
                       >
-                        {isNull ? "null" : String(val)}
+                        {isNull ? (
+                          "null"
+                        ) : (
+                          <span
+                            className="line-clamp-3 whitespace-pre-line"
+                            title={String(val)}
+                          >
+                            {String(val)}
+                          </span>
+                        )}
                       </td>
                     )
                   })}
