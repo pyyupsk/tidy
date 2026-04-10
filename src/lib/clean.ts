@@ -32,7 +32,8 @@ export function applyDropColumns(
   headers: string[],
   dropped: string[],
 ): { headers: string[]; rows: Row[] } {
-  const keepHeaders = headers.filter((h) => !dropped.includes(h))
+  const droppedSet = new Set(dropped)
+  const keepHeaders = headers.filter((h) => !droppedSet.has(h))
   const keepRows = rows.map((row) => {
     const next: Row = {}
     for (const h of keepHeaders) next[h] = row[h]
