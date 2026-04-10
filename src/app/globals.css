@@ -126,3 +126,24 @@
     @apply min-h-screen bg-background text-foreground font-sans antialiased;
   }
 }
+
+/* ─── Tidy: OLED dark theme ─────────────────────────────────────────────── */
+.dark {
+  --background: oklch(0% 0 0);
+  --foreground: oklch(93% 0 0);
+  --card: oklch(3.1% 0 0);
+  --card-foreground: oklch(93% 0 0);
+  --popover: oklch(3.1% 0 0);
+  --popover-foreground: oklch(93% 0 0);
+  --primary: oklch(100% 0 0);
+  --primary-foreground: oklch(0% 0 0);
+  --secondary: oklch(10% 0 0);
+  --secondary-foreground: oklch(93% 0 0);
+  --muted: oklch(8% 0 0);
+  --muted-foreground: oklch(55% 0 0);
+  --accent: oklch(10% 0 0);
+  --accent-foreground: oklch(93% 0 0);
+  --border: oklch(10% 0 0);
+  --input: oklch(10% 0 0);
+  --ring: oklch(20% 0 0);
+}
