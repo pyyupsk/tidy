@@ -219,6 +219,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           fillRules,
           skipFirstRow,
           activeSheet,
+          _workbook,
         } = get()
         if (!fileName) return
 
@@ -245,6 +246,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           cleaned,
           `${baseName}-tidy.xlsx`,
           activeSheet ?? "Sheet1",
+          _workbook ?? undefined,
         )
       },
 

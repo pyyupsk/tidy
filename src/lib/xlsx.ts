@@ -68,9 +68,23 @@ export function exportXlsx(
   rows: Row[],
   fileName: string,
   sheetName = "Sheet1",
+  sourceWorkbook?: XLSX.WorkBook,
 ): void {
   const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, sheetName)
+
+  if (sourceWorkbook) {
+    // Preserve all sheets from the original workbook, replacing only the active one
+    for (const name of sourceWorkbook.SheetNames) {
+      if (name === sheetName) {
+        XLSX.utils.book_append_sheet(wb, ws, name)
+      } else {
+        XLSX.utils.book_append_sheet(wb, sourceWorkbook.Sheets[name], name)
+      }
+    }
+  } else {
+    XLSX.utils.book_append_sheet(wb, ws, sheetName)
+  }
+
   XLSX.writeFile(wb, fileName)
 }
