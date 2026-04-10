@@ -7,6 +7,7 @@ import {
   IconUpload,
 } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
+import { Logo } from "@/components/brand/logo"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -46,9 +47,7 @@ export function TopBar() {
   return (
     <header className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-background px-4">
       <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold tracking-tight text-white">
-          tidy
-        </span>
+        <Logo size="sm" />
         {fileName && (
           <div className="flex items-center gap-1.5 rounded border border-border px-2 py-0.5">
             <IconFile size={11} className="text-zinc-600" />
