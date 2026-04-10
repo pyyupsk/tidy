@@ -69,7 +69,7 @@ function Badge({
         "rounded px-1.5 py-0.5 font-mono text-xs",
         warn && color === "red" && "bg-red-950 text-red-400",
         warn && color === "amber" && "bg-amber-950 text-amber-400",
-        !warn && "bg-zinc-900 text-zinc-500"
+        !warn && "bg-zinc-900 text-zinc-500",
       )}
     >
       {value.toLocaleString()}

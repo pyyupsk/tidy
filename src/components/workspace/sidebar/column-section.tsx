@@ -30,11 +30,19 @@ export function ColumnSection() {
                   "flex size-3 shrink-0 items-center justify-center rounded border transition-colors",
                   dropped
                     ? "border-white bg-white"
-                    : "border-[#333] bg-transparent hover:border-zinc-500"
+                    : "border-[#333] bg-transparent hover:border-zinc-500",
                 )}
               >
                 {dropped && (
-                  <svg width="8" height="6" viewBox="0 0 8 6" fill="none" className="block">
+                  <svg
+                    width="8"
+                    height="6"
+                    viewBox="0 0 8 6"
+                    fill="none"
+                    className="block"
+                    aria-label="checked"
+                    role="img"
+                  >
                     <path
                       d="M1 3L3 5L7 1"
                       stroke="#000"
@@ -48,7 +56,7 @@ export function ColumnSection() {
               <span
                 className={cn(
                   "font-mono text-[11px] transition-colors",
-                  dropped ? "text-zinc-500 line-through" : "text-zinc-400"
+                  dropped ? "text-zinc-500 line-through" : "text-zinc-400",
                 )}
               >
                 {h}

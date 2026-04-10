@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { cn } from "@/lib/utils"
 import { isNullish } from "@/lib/clean"
+import { cn } from "@/lib/utils"
 import {
   selectDuplicateIndices,
   useSpreadsheetStore,
@@ -57,7 +57,7 @@ export function DataTable() {
                   <td
                     className={cn(
                       "border-b border-r border-[#0f0f0f] px-3 py-1.5 text-right font-mono text-[10px] text-zinc-700",
-                      isDupe && "border-l-2 border-l-amber-500/40"
+                      isDupe && "border-l-2 border-l-amber-500/40",
                     )}
                   >
                     {absIndex + 1}
@@ -70,7 +70,7 @@ export function DataTable() {
                         key={h}
                         className={cn(
                           "max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap border-b border-r border-[#0f0f0f] px-3 py-1.5 font-mono text-zinc-400",
-                          isNull && "bg-red-950/20 italic text-red-500/50"
+                          isNull && "bg-red-950/20 italic text-red-500/50",
                         )}
                         title={isNull ? undefined : String(val)}
                       >
@@ -88,8 +88,8 @@ export function DataTable() {
       {/* Bottom bar */}
       <div className="flex shrink-0 items-center justify-between border-t border-[#1a1a1a] bg-[#080808] px-4 py-2">
         <p className="text-[10px] text-zinc-600">
-          Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, rows.length)} of{" "}
-          {rows.length.toLocaleString()}
+          Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, rows.length)}{" "}
+          of {rows.length.toLocaleString()}
           {" · "}
           <span className="text-amber-500/60">amber rows = duplicates</span>
           {" · "}

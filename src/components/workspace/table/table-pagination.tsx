@@ -26,6 +26,7 @@ export function TablePagination({
 
       {pages.map((p, i) =>
         p === "…" ? (
+          // biome-ignore lint/suspicious/noArrayIndexKey: ellipsis positions are structurally stable
           <span key={`ellipsis-${i}`} className="px-1 text-xs text-zinc-600">
             …
           </span>
@@ -37,7 +38,7 @@ export function TablePagination({
           >
             {p}
           </PageButton>
-        )
+        ),
       )}
 
       <PageButton
@@ -59,7 +60,13 @@ type PageButtonProps = {
   "aria-label"?: string
 }
 
-function PageButton({ onClick, disabled, active, children, "aria-label": ariaLabel }: Readonly<PageButtonProps>) {
+function PageButton({
+  onClick,
+  disabled,
+  active,
+  children,
+  "aria-label": ariaLabel,
+}: Readonly<PageButtonProps>) {
   return (
     <button
       type="button"
@@ -70,7 +77,7 @@ function PageButton({ onClick, disabled, active, children, "aria-label": ariaLab
         "flex min-w-[22px] cursor-pointer items-center justify-center rounded border px-1.5 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-30",
         active
           ? "border-white bg-white text-black"
-          : "border-[#2a2a2a] text-zinc-500 hover:text-zinc-300"
+          : "border-[#2a2a2a] text-zinc-500 hover:text-zinc-300",
       )}
     >
       {children}
@@ -81,6 +88,7 @@ function PageButton({ onClick, disabled, active, children, "aria-label": ariaLab
 function getPageNumbers(current: number, total: number): (number | "…")[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
   if (current <= 4) return [1, 2, 3, 4, 5, "…", total]
-  if (current >= total - 3) return [1, "…", total - 4, total - 3, total - 2, total - 1, total]
+  if (current >= total - 3)
+    return [1, "…", total - 4, total - 3, total - 2, total - 1, total]
   return [1, "…", current - 1, current, current + 1, "…", total]
 }

@@ -36,13 +36,13 @@ export function DuplicateSection() {
                   "flex cursor-pointer items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] transition-colors",
                   active
                     ? "border-zinc-500 bg-[#111] text-zinc-200"
-                    : "border-[#2a2a2a] text-zinc-600 hover:border-zinc-600 hover:text-zinc-400"
+                    : "border-[#2a2a2a] text-zinc-600 hover:border-zinc-600 hover:text-zinc-400",
                 )}
               >
                 <span
                   className={cn(
                     "inline-block size-1.5 rounded-full",
-                    active ? "bg-green-400" : "bg-zinc-700"
+                    active ? "bg-green-400" : "bg-zinc-700",
                   )}
                 />
                 {h}
@@ -52,7 +52,8 @@ export function DuplicateSection() {
         </div>
         {hasKeys && (
           <div className="mt-2 rounded border border-green-900 bg-green-950/40 px-2 py-1.5 font-mono text-[10px] text-green-400">
-            → {dupeCount.toLocaleString()} duplicate{dupeCount !== 1 ? "s" : ""} found
+            → {dupeCount.toLocaleString()} duplicate{dupeCount !== 1 ? "s" : ""}{" "}
+            found
           </div>
         )}
       </div>
