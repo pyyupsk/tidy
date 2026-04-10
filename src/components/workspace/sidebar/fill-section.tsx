@@ -170,7 +170,7 @@ export function FillSection() {
                       handleValueChange(col, fillType, e.target.value)
                     }
                     placeholder={fillType === "number" ? "0" : "value"}
-                    className="h-6 w-20 font-mono text-xs"
+                    className="w-20 font-mono text-xs"
                   />
                 )}
               </div>
