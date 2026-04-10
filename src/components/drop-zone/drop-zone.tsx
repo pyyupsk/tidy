@@ -51,14 +51,11 @@ export function DropZone() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex h-11 shrink-0 items-center border-b border-border bg-background px-4">
-        <Logo size="sm" />
-      </header>
-
-      <main className="flex flex-1 items-center justify-center p-6">
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 p-6">
         <div className="flex w-full max-w-5xl overflow-hidden rounded-xl border border-border">
           {/* Left panel — branding + copy */}
           <div className="flex flex-1 flex-col justify-center gap-5 border-r border-border px-12 py-10">
+            <Logo size="2xl" />
             <div>
               <p className="text-xl font-bold tracking-tight text-foreground">
                 Clean your .xlsx in seconds.
@@ -131,6 +128,17 @@ export function DropZone() {
             />
           </div>
         </div>
+        <p className="text-xs text-zinc-600">
+          Open source and built with love —{" "}
+          <a
+            href="https://github.com/pyyupsk/tidy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-zinc-400"
+          >
+            view on GitHub
+          </a>
+        </p>
       </main>
     </div>
   )

@@ -3,6 +3,9 @@ import { cn } from "@/lib/utils"
 const sizes = {
   sm: { icon: 16, text: "text-sm", gap: "gap-1.5" },
   md: { icon: 24, text: "text-lg", gap: "gap-2" },
+  lg: { icon: 36, text: "text-2xl", gap: "gap-3" },
+  xl: { icon: 48, text: "text-3xl", gap: "gap-3.5" },
+  "2xl": { icon: 64, text: "text-4xl", gap: "gap-4" },
 } as const
 
 type LogoProps = {
