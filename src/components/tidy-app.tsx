@@ -46,8 +46,7 @@ export function TidyApp() {
     }
 
     hydrateAndRestore()
-  // biome-ignore lint/correctness/useExhaustiveDependencies: hasStartedRef guards re-runs; store action refs are stable
-  }, [])
+  }, [reset, restoreSession])
 
   if (stage === "pending") {
     return (

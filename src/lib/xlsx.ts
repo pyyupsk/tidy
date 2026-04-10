@@ -26,7 +26,8 @@ export function parseSheet(
   workbook: XLSXType.WorkBook,
   sheetName: string,
 ): { headers: string[]; rows: Row[]; columnLabels: Record<string, string> } {
-  const XLSX = xlsxModule!
+  if (!xlsxModule) throw new Error("xlsx not loaded — call readWorkbook first")
+  const XLSX = xlsxModule
   const sheet = workbook.Sheets[sheetName]
   if (!sheet) return { headers: [], rows: [], columnLabels: {} }
 
@@ -83,7 +84,8 @@ export function buildWorkbook(
   sheetName: string,
   sourceWorkbook?: XLSXType.WorkBook,
 ): XLSXType.WorkBook {
-  const XLSX = xlsxModule!
+  if (!xlsxModule) throw new Error("xlsx not loaded — call readWorkbook first")
+  const XLSX = xlsxModule
   const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
   const wb = XLSX.utils.book_new()
 
