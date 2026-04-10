@@ -16,7 +16,7 @@ export function WorkspaceView() {
     <div className="flex h-dvh min-w-[800px] flex-col bg-black">
       <TopBar />
       {showBanner && (
-        <div className="flex shrink-0 items-center justify-between border-b border-border bg-amber-950/30 px-4 py-1.5 text-[11px] text-amber-300">
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-amber-950/30 px-4 py-1.5 text-xs text-amber-300">
           <span>First row looks like a header — skipping it.</span>
           <button
             type="button"

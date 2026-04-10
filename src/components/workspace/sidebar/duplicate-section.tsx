@@ -21,12 +21,12 @@ export function DuplicateSection() {
   return (
     <div>
       <div className="flex items-center justify-between px-3 pb-2 pt-3">
-        <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-600">
+        <span className="text-xs font-medium uppercase tracking-widest text-zinc-600">
           Duplicates
         </span>
       </div>
       <div className="px-3 pb-3">
-        <p className="mb-2 text-[10px] text-zinc-600">Check by columns:</p>
+        <p className="mb-2 text-xs text-zinc-600">Check by columns:</p>
         <div className="flex flex-wrap gap-1">
           {headers.map((h) => {
             const active = duplicateKeys.includes(h)
@@ -37,7 +37,7 @@ export function DuplicateSection() {
                 variant={active ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => toggleDuplicateKey(h)}
-                className="h-5 w-full justify-start gap-1 px-1.5 font-mono text-[10px]"
+                className="h-5 w-full justify-start gap-1 px-1.5 font-mono text-xs"
               >
                 <span
                   className={cn(
@@ -51,7 +51,7 @@ export function DuplicateSection() {
           })}
         </div>
         {hasKeys && (
-          <div className="mt-2 rounded border border-green-900 bg-green-950/40 px-2 py-1.5 font-mono text-[10px] text-green-400">
+          <div className="mt-2 rounded border border-green-900 bg-green-950/40 px-2 py-1.5 font-mono text-xs text-green-400">
             → {dupeCount.toLocaleString()} duplicate{dupeCount === 1 ? "" : "s"}{" "}
             found
           </div>

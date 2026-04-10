@@ -100,7 +100,7 @@ export function FillSection() {
   return (
     <div>
       <div className="px-3 pb-2 pt-3">
-        <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-600">
+        <span className="text-xs font-medium uppercase tracking-widest text-zinc-600">
           Fill Missing
         </span>
       </div>
@@ -116,7 +116,7 @@ export function FillSection() {
               key={col}
               className="mb-2 flex flex-col gap-1 border-b border-border pb-2 last:border-none last:pb-0"
             >
-              <span className="font-mono text-[10px] text-zinc-500">
+              <span className="font-mono text-xs text-zinc-500">
                 {columnLabels[col] ?? col}
               </span>
               <div className="flex gap-1">
@@ -124,32 +124,23 @@ export function FillSection() {
                   value={fillType}
                   onValueChange={(v) => handleTypeChange(col, v as FillType)}
                 >
-                  <SelectTrigger className="h-6 flex-1 font-mono text-[10px]">
+                  <SelectTrigger className="h-6 flex-1 font-mono text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none" className="font-mono text-[10px]">
+                    <SelectItem value="none" className="font-mono text-xs">
                       —
                     </SelectItem>
-                    <SelectItem
-                      value="string"
-                      className="font-mono text-[10px]"
-                    >
+                    <SelectItem value="string" className="font-mono text-xs">
                       string
                     </SelectItem>
-                    <SelectItem
-                      value="number"
-                      className="font-mono text-[10px]"
-                    >
+                    <SelectItem value="number" className="font-mono text-xs">
                       number
                     </SelectItem>
-                    <SelectItem
-                      value="median"
-                      className="font-mono text-[10px]"
-                    >
+                    <SelectItem value="median" className="font-mono text-xs">
                       median
                     </SelectItem>
-                    <SelectItem value="empty" className="font-mono text-[10px]">
+                    <SelectItem value="empty" className="font-mono text-xs">
                       empty ""
                     </SelectItem>
                   </SelectContent>
@@ -163,7 +154,7 @@ export function FillSection() {
                       handleValueChange(col, fillType, e.target.value)
                     }
                     placeholder={fillType === "number" ? "0" : "value"}
-                    className="h-6 w-20 font-mono text-[10px]"
+                    className="h-6 w-20 font-mono text-xs"
                   />
                 )}
               </div>
@@ -183,7 +174,7 @@ export function FillSection() {
 
 function FillTag({ displayValue }: Readonly<{ displayValue: string }>) {
   return (
-    <span className="self-start rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400">
+    <span className="self-start rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400">
       <span className="font-normal">fill: </span>
       <span className="font-mono">{displayValue}</span>
     </span>

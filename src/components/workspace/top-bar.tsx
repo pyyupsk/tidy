@@ -84,7 +84,7 @@ export function TopBar() {
 
       <div className="flex items-center gap-2">
         {showRestored && (
-          <span className="rounded border border-green-900 bg-green-950/40 px-1.5 py-0.5 font-mono text-[10px] text-green-400">
+          <span className="rounded border border-green-900 bg-green-950/40 px-1.5 py-0.5 font-mono text-xs text-green-400">
             session restored
           </span>
         )}

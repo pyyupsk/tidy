@@ -12,7 +12,7 @@ export function ColumnSection() {
   return (
     <div>
       <div className="px-3 pb-2 pt-3">
-        <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-600">
+        <span className="text-xs font-medium uppercase tracking-widest text-zinc-600">
           Drop Columns
         </span>
       </div>
@@ -57,7 +57,7 @@ export function ColumnSection() {
               <span
                 title={columnLabels[h] ?? h}
                 className={cn(
-                  "truncate font-mono text-[11px] transition-colors",
+                  "truncate font-mono text-xs transition-colors",
                   dropped ? "text-zinc-500 line-through" : "text-zinc-400",
                 )}
               >
