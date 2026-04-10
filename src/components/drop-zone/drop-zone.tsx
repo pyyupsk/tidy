@@ -51,7 +51,7 @@ export function DropZone() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex h-11 shrink-0 items-center border-b border-border px-4">
+      <header className="flex h-11 shrink-0 items-center border-b border-border bg-background px-4">
         <Logo size="sm" />
       </header>
 
