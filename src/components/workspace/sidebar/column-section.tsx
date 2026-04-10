@@ -31,7 +31,7 @@ export function ColumnSection() {
 
   return (
     <div>
-      <div className="flex items-center justify-between px-3 pb-2 pt-3">
+      <div className="flex items-center justify-between px-3 pb-2 pt-3 relative">
         <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-600">
           Drop Columns
         </span>
@@ -44,6 +44,7 @@ export function ColumnSection() {
                   variant="ghost"
                   size="icon-xs"
                   onClick={dropAllNullColumns}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 />
               }
             >
