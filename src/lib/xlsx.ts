@@ -12,10 +12,33 @@ export function parseSheet(
 ): { headers: string[]; rows: Row[] } {
   const sheet = workbook.Sheets[sheetName]
   if (!sheet) return { headers: [], rows: [] }
-  const raw = XLSX.utils.sheet_to_json<Row>(sheet, { defval: null, raw: false })
-  if (raw.length === 0) return { headers: [], rows: [] }
-  const headers = Object.keys(raw[0])
-  return { headers, rows: raw }
+
+  const ref = sheet["!ref"]
+  if (!ref) return { headers: [], rows: [] }
+
+  const range = XLSX.utils.decode_range(ref)
+
+  const headers: string[] = []
+  for (let c = range.s.c; c <= range.e.c; c++) {
+    headers.push(XLSX.utils.encode_col(c))
+  }
+
+  const raw = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
+    header: 1,
+    defval: null,
+    raw: false,
+    blankrows: true,
+  })
+
+  const rows: Row[] = raw.map((arr) => {
+    const row: Row = {}
+    headers.forEach((h, i) => {
+      row[h] = (arr)[i] ?? null
+    })
+    return row
+  })
+
+  return { headers, rows }
 }
 
 export function exportXlsx(

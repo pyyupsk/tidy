@@ -34,7 +34,7 @@ export function DuplicateSection() {
                 variant={active ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => toggleDuplicateKey(h)}
-                className="h-5 gap-1 px-1.5 font-mono text-[10px] w-full"
+                className="h-5 gap-1 px-1.5 font-mono text-[10px] w-full justify-start"
               >
                 <span
                   className={cn(
@@ -49,7 +49,7 @@ export function DuplicateSection() {
         </div>
         {hasKeys && (
           <div className="mt-2 rounded border border-green-900 bg-green-950/40 px-2 py-1.5 font-mono text-[10px] text-green-400">
-            → {dupeCount.toLocaleString()} duplicate{dupeCount !== 1 ? "s" : ""}{" "}
+            → {dupeCount.toLocaleString()} duplicate{dupeCount === 1 ? "" : "s"}{" "}
             found
           </div>
         )}
