@@ -55,8 +55,9 @@ export function ColumnSection() {
                 )}
               </span>
               <span
+                title={columnLabels[h] ?? h}
                 className={cn(
-                  "font-mono text-[11px] transition-colors",
+                  "truncate font-mono text-[11px] transition-colors",
                   dropped ? "text-zinc-500 line-through" : "text-zinc-400",
                 )}
               >

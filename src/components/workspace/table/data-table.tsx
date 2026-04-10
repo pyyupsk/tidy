@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { computeMedian, isNullish } from "@/lib/clean"
 import { cn } from "@/lib/utils"
 import {
@@ -19,7 +20,10 @@ function CellContent({
   if (isNull && fillPreview === undefined) return "null"
   const display = fillPreview === undefined ? val : fillPreview
   return (
-    <span className="line-clamp-3 whitespace-pre-line" title={String(display as string)}>
+    <span
+      className="line-clamp-3 whitespace-pre-line"
+      title={String(display as string)}
+    >
       {String(display as string)}
     </span>
   )
@@ -27,7 +31,7 @@ function CellContent({
 
 export function DataTable() {
   const headers = useSpreadsheetStore((s) => s.headers)
-  const rows = useSpreadsheetStore((s) => s.rows)
+  const rows = useEffectiveRows()
   const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
@@ -107,10 +111,10 @@ export function DataTable() {
                         className={cn(
                           "max-w-[280px] border-b border-r border-border px-3 py-1.5 font-mono text-zinc-400",
                           isNull &&
-                          !isFilled &&
-                          "bg-red-950/20 italic text-red-500/50",
+                            !isFilled &&
+                            "bg-red-950/20 italic text-red-500/50",
                           isFilled &&
-                          "bg-green-950/20 italic text-green-400/70",
+                            "bg-green-950/20 italic text-green-400/70",
                         )}
                       >
                         <CellContent

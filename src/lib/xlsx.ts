@@ -1,8 +1,11 @@
 import * as XLSX from "xlsx"
 import type { Row } from "@/lib/clean"
 
-export async function readWorkbook(file: File): Promise<XLSX.WorkBook> {
-  const buffer = await file.arrayBuffer()
+export async function readWorkbook(
+  source: File | ArrayBuffer,
+): Promise<XLSX.WorkBook> {
+  const buffer =
+    source instanceof ArrayBuffer ? source : await source.arrayBuffer()
   return XLSX.read(buffer, { type: "array", cellDates: true })
 }
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { cn } from "@/lib/utils"
 import {
   selectDuplicateIndices,
@@ -9,7 +10,7 @@ import {
 
 export function DuplicateSection() {
   const headers = useSpreadsheetStore((s) => s.headers)
-  const rows = useSpreadsheetStore((s) => s.rows)
+  const rows = useEffectiveRows()
   const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
   const toggleDuplicateKey = useSpreadsheetStore((s) => s.toggleDuplicateKey)
@@ -32,18 +33,19 @@ export function DuplicateSection() {
             return (
               <Button
                 key={h}
+                title={columnLabels[h] ?? h}
                 variant={active ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => toggleDuplicateKey(h)}
-                className="h-5 gap-1 px-1.5 font-mono text-[10px] w-full justify-start"
+                className="h-5 w-full justify-start gap-1 px-1.5 font-mono text-[10px]"
               >
                 <span
                   className={cn(
-                    "inline-block size-1.5 rounded-full",
+                    "inline-block size-1.5 shrink-0 rounded-full",
                     active ? "bg-green-400" : "bg-zinc-700",
                   )}
                 />
-                {columnLabels[h] ?? h}
+                <span className="truncate">{columnLabels[h] ?? h}</span>
               </Button>
             )
           })}

@@ -1,6 +1,7 @@
 "use client"
 
 import { IconDownload, IconFile, IconUpload } from "@tabler/icons-react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { consumeRestored } from "@/lib/session-storage"
 import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
 export function TopBar() {
@@ -16,9 +18,19 @@ export function TopBar() {
   const rows = useSpreadsheetStore((s) => s.rows)
   const sheetNames = useSpreadsheetStore((s) => s.sheetNames)
   const activeSheet = useSpreadsheetStore((s) => s.activeSheet)
+  const skipFirstRow = useSpreadsheetStore((s) => s.skipFirstRow)
   const switchSheet = useSpreadsheetStore((s) => s.switchSheet)
+  const setSkipFirstRow = useSpreadsheetStore((s) => s.setSkipFirstRow)
   const exportFile = useSpreadsheetStore((s) => s.exportFile)
   const reset = useSpreadsheetStore((s) => s.reset)
+  const [showRestored, setShowRestored] = useState(false)
+
+  useEffect(() => {
+    if (!consumeRestored()) return
+    setShowRestored(true)
+    const timer = setTimeout(() => setShowRestored(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <header className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-background px-4">
@@ -35,6 +47,17 @@ export function TopBar() {
               {rows.length.toLocaleString()} rows
             </span>
           </div>
+        )}
+        {fileName && (
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200">
+            <input
+              type="checkbox"
+              checked={skipFirstRow}
+              onChange={(e) => setSkipFirstRow(e.target.checked)}
+              className="size-3 cursor-pointer accent-white"
+            />{" "}
+            Skip row 1
+          </label>
         )}
         {sheetNames.length > 1 && activeSheet && (
           <Select
@@ -60,6 +83,11 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-2">
+        {showRestored && (
+          <span className="rounded border border-green-900 bg-green-950/40 px-1.5 py-0.5 font-mono text-[10px] text-green-400">
+            session restored
+          </span>
+        )}
         <Button
           variant="ghost"
           size="sm"

@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -8,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import { useEffectiveRows } from "@/hooks/useEffectiveRows"
+import { computeMedian } from "@/lib/clean"
 import {
   selectColumnsWithNulls,
   useSpreadsheetStore,
@@ -30,8 +32,15 @@ function ruleToInputValue(rule: FillRule | undefined): string {
   return String(rule.value)
 }
 
+function formatDisplay(rule: FillRule, medianDisplay: string): string {
+  if (rule.type === "median") return `median (${medianDisplay})`
+  if (rule.type === "empty") return '""'
+  if (typeof rule.value === "number") return String(rule.value)
+  return `"${rule.value}"`
+}
+
 export function FillSection() {
-  const rows = useSpreadsheetStore((s) => s.rows)
+  const rows = useEffectiveRows()
   const headers = useSpreadsheetStore((s) => s.headers)
   const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const fillRules = useSpreadsheetStore((s) => s.fillRules)
@@ -39,6 +48,17 @@ export function FillSection() {
   const removeFillRule = useSpreadsheetStore((s) => s.removeFillRule)
 
   const nullCols = selectColumnsWithNulls({ rows, headers })
+
+  const medianDisplays = useMemo(() => {
+    const result: Record<string, string> = {}
+    for (const col of nullCols) {
+      const nums = rows
+        .map((r) => r[col])
+        .filter((v): v is number => typeof v === "number")
+      result[col] = nums.length > 0 ? String(computeMedian(nums)) : "—"
+    }
+    return result
+  }, [rows, nullCols])
 
   if (nullCols.length === 0) return null
 
@@ -148,7 +168,11 @@ export function FillSection() {
                 )}
               </div>
 
-              {rule && <FillPill rule={rule} />}
+              {rule && (
+                <FillTag
+                  displayValue={formatDisplay(rule, medianDisplays[col] ?? "—")}
+                />
+              )}
             </div>
           )
         })}
@@ -157,32 +181,11 @@ export function FillSection() {
   )
 }
 
-function FillPill({ rule }: Readonly<{ rule: FillRule }>) {
-  if (rule.type === "median") {
-    return (
-      <span className="self-start rounded border border-amber-900 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[9px] text-amber-400">
-        median
-      </span>
-    )
-  }
-  if (rule.type === "empty") {
-    return (
-      <span className="self-start rounded border border-green-900 bg-green-950/40 px-1.5 py-0.5 font-mono text-[9px] text-green-400">
-        {'""'}
-      </span>
-    )
-  }
-  const isNum = typeof rule.value === "number"
+function FillTag({ displayValue }: Readonly<{ displayValue: string }>) {
   return (
-    <span
-      className={cn(
-        "self-start rounded border px-1.5 py-0.5 font-mono text-[9px]",
-        isNum
-          ? "border-blue-900 bg-blue-950/40 text-blue-400"
-          : "border-green-900 bg-green-950/40 text-green-400",
-      )}
-    >
-      {isNum ? rule.value : `"${rule.value}"`}
+    <span className="self-start rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400">
+      <span className="font-normal">fill: </span>
+      <span className="font-mono">{displayValue}</span>
     </span>
   )
 }

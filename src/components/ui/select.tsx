@@ -12,7 +12,10 @@ import { cn } from "@/lib/utils"
 
 const Select = SelectPrimitive.Root
 
-function SelectGroup({ className, ...props }: Readonly<SelectPrimitive.Group.Props>) {
+function SelectGroup({
+  className,
+  ...props
+}: Readonly<SelectPrimitive.Group.Props>) {
   return (
     <SelectPrimitive.Group
       data-slot="select-group"
@@ -22,7 +25,10 @@ function SelectGroup({ className, ...props }: Readonly<SelectPrimitive.Group.Pro
   )
 }
 
-function SelectValue({ className, ...props }: Readonly<SelectPrimitive.Value.Props>) {
+function SelectValue({
+  className,
+  ...props
+}: Readonly<SelectPrimitive.Value.Props>) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
@@ -32,7 +38,9 @@ function SelectValue({ className, ...props }: Readonly<SelectPrimitive.Value.Pro
   )
 }
 
-type SelectTriggerProps = SelectPrimitive.Trigger.Props & { size?: "sm" | "default" }
+type SelectTriggerProps = SelectPrimitive.Trigger.Props & {
+  size?: "sm" | "default"
+}
 
 function SelectTrigger({
   className,

@@ -26,7 +26,8 @@ const badgeVariants = cva(
   },
 )
 
-type BadgeProps = useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>
+type BadgeProps = useRender.ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants>
 
 function Badge({
   className,
