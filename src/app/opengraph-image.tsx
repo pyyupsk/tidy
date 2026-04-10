@@ -142,7 +142,7 @@ export default function Image() {
           gap: 0,
         }}
       >
-        {/* Wordmark */}
+        {/* Logo text */}
         <div
           style={{
             fontSize: 108,
