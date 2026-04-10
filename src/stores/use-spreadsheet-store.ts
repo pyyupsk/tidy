@@ -32,6 +32,7 @@ type SpreadsheetStore = {
   switchSheet: (sheetName: string) => void
   toggleDuplicateKey: (col: string) => void
   toggleDropColumn: (col: string) => void
+  dropAllNullColumns: () => void
   setFillRule: (col: string, rule: FillRule) => void
   removeFillRule: (col: string) => void
   setSkipFirstRow: (value: boolean) => void
@@ -189,6 +190,13 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
         })
       },
 
+      dropAllNullColumns: () => {
+        const state = get()
+        const allNull = selectAllNullColumns(state)
+        const next = Array.from(new Set([...state.droppedColumns, ...allNull]))
+        set({ droppedColumns: next })
+      },
+
       setFillRule: (col, rule) =>
         set((state) => ({ fillRules: { ...state.fillRules, [col]: rule } })),
 
@@ -282,6 +290,16 @@ export function selectColumnsWithNulls(
 ): string[] {
   return state.headers.filter((h) =>
     state.rows.some((row) => isNullish(row[h])),
+  )
+}
+
+export function selectAllNullColumns(
+  state: Pick<SpreadsheetStore, "rows" | "headers" | "skipFirstRow">,
+): string[] {
+  const effectiveRows = state.skipFirstRow ? state.rows.slice(1) : state.rows
+  if (effectiveRows.length === 0) return []
+  return state.headers.filter((h) =>
+    effectiveRows.every((row) => isNullish(row[h])),
   )
 }
 
