@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
   selectDuplicateIndices,
@@ -28,16 +29,12 @@ export function DuplicateSection() {
           {headers.map((h) => {
             const active = duplicateKeys.includes(h)
             return (
-              <button
+              <Button
                 key={h}
-                type="button"
+                variant={active ? "secondary" : "outline"}
+                size="sm"
                 onClick={() => toggleDuplicateKey(h)}
-                className={cn(
-                  "flex cursor-pointer items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] transition-colors",
-                  active
-                    ? "border-zinc-500 bg-[#111] text-zinc-200"
-                    : "border-[#2a2a2a] text-zinc-600 hover:border-zinc-600 hover:text-zinc-400",
-                )}
+                className="h-5 gap-1 px-1.5 font-mono text-[10px]"
               >
                 <span
                   className={cn(
@@ -46,7 +43,7 @@ export function DuplicateSection() {
                   )}
                 />
                 {h}
-              </button>
+              </Button>
             )
           })}
         </div>

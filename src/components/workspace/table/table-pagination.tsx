@@ -1,5 +1,5 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 type TablePaginationProps = {
   currentPage: number
@@ -16,72 +16,47 @@ export function TablePagination({
 
   return (
     <div className="flex items-center gap-1">
-      <PageButton
+      <Button
+        variant="outline"
+        size="icon"
+        className="size-6"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="Previous page"
       >
         <IconChevronLeft size={12} />
-      </PageButton>
+      </Button>
 
       {pages.map((p, i) =>
         p === "…" ? (
-          // biome-ignore lint/suspicious/noArrayIndexKey: ellipsis positions are structurally stable
+          // biome-ignore lint/suspicious/noArrayIndexKey: ellipsis positions are stable
           <span key={`ellipsis-${i}`} className="px-1 text-xs text-zinc-600">
             …
           </span>
         ) : (
-          <PageButton
+          <Button
             key={p}
+            variant={currentPage === p ? "default" : "outline"}
+            size="icon"
+            className="size-6 text-xs"
             onClick={() => onPageChange(p as number)}
-            active={currentPage === p}
           >
             {p}
-          </PageButton>
+          </Button>
         ),
       )}
 
-      <PageButton
+      <Button
+        variant="outline"
+        size="icon"
+        className="size-6"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="Next page"
       >
         <IconChevronRight size={12} />
-      </PageButton>
+      </Button>
     </div>
-  )
-}
-
-type PageButtonProps = {
-  onClick: () => void
-  disabled?: boolean
-  active?: boolean
-  children: React.ReactNode
-  "aria-label"?: string
-}
-
-function PageButton({
-  onClick,
-  disabled,
-  active,
-  children,
-  "aria-label": ariaLabel,
-}: Readonly<PageButtonProps>) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={ariaLabel}
-      className={cn(
-        "flex min-w-[22px] cursor-pointer items-center justify-center rounded border px-1.5 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-30",
-        active
-          ? "border-white bg-white text-black"
-          : "border-[#2a2a2a] text-zinc-500 hover:text-zinc-300",
-      )}
-    >
-      {children}
-    </button>
   )
 }
 

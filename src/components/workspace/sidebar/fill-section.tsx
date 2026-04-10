@@ -1,5 +1,13 @@
 "use client"
 
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import {
   selectColumnsWithNulls,
@@ -46,10 +54,9 @@ export function FillSection() {
       setFillRule(col, { type: "empty" })
       return
     }
-    // string or number — set literal with current input value
     const currentVal = ruleToInputValue(fillRules[col])
     if (fillType === "number") {
-      const num = parseFloat(currentVal)
+      const num = Number.parseFloat(currentVal)
       setFillRule(col, { type: "literal", value: Number.isNaN(num) ? 0 : num })
     } else {
       setFillRule(col, { type: "literal", value: currentVal })
@@ -62,7 +69,7 @@ export function FillSection() {
     rawValue: string,
   ) {
     if (fillType === "number") {
-      const num = parseFloat(rawValue)
+      const num = Number.parseFloat(rawValue)
       setFillRule(col, { type: "literal", value: Number.isNaN(num) ? 0 : num })
     } else {
       setFillRule(col, { type: "literal", value: rawValue })
@@ -90,29 +97,50 @@ export function FillSection() {
             >
               <span className="font-mono text-[10px] text-zinc-500">{col}</span>
               <div className="flex gap-1">
-                <select
+                <Select
                   value={fillType}
-                  onChange={(e) =>
-                    handleTypeChange(col, e.target.value as FillType)
-                  }
-                  className="flex-1 cursor-pointer rounded border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-1 font-mono text-[10px] text-zinc-400 outline-none focus:border-zinc-600"
+                  onValueChange={(v) => handleTypeChange(col, v as FillType)}
                 >
-                  <option value="none">—</option>
-                  <option value="string">string</option>
-                  <option value="number">number</option>
-                  <option value="median">median</option>
-                  <option value="empty">empty ""</option>
-                </select>
+                  <SelectTrigger className="h-6 flex-1 font-mono text-[10px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none" className="font-mono text-[10px]">
+                      —
+                    </SelectItem>
+                    <SelectItem
+                      value="string"
+                      className="font-mono text-[10px]"
+                    >
+                      string
+                    </SelectItem>
+                    <SelectItem
+                      value="number"
+                      className="font-mono text-[10px]"
+                    >
+                      number
+                    </SelectItem>
+                    <SelectItem
+                      value="median"
+                      className="font-mono text-[10px]"
+                    >
+                      median
+                    </SelectItem>
+                    <SelectItem value="empty" className="font-mono text-[10px]">
+                      empty ""
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
 
                 {showInput && (
-                  <input
+                  <Input
                     type={fillType === "number" ? "number" : "text"}
                     value={inputVal}
                     onChange={(e) =>
                       handleValueChange(col, fillType, e.target.value)
                     }
                     placeholder={fillType === "number" ? "0" : "value"}
-                    className="w-20 rounded border border-[#2a2a2a] bg-[#0a0a0a] px-1.5 py-1 font-mono text-[10px] text-zinc-300 outline-none placeholder:text-zinc-700 focus:border-zinc-600"
+                    className="h-6 w-20 font-mono text-[10px]"
                   />
                 )}
               </div>

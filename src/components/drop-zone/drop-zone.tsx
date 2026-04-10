@@ -2,6 +2,7 @@
 
 import { IconUpload } from "@tabler/icons-react"
 import { useCallback, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
@@ -53,8 +54,8 @@ export function DropZone() {
       </header>
 
       <main className="flex flex-1 items-center justify-center p-8">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => {
             e.preventDefault()
@@ -64,10 +65,10 @@ export function DropZone() {
           onDrop={handleDrop}
           disabled={isLoading}
           className={cn(
-            "flex w-full max-w-sm cursor-pointer flex-col items-center gap-4 rounded-lg border border-dashed p-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20",
+            "flex h-auto w-full max-w-sm flex-col items-center gap-4 rounded-lg border border-dashed p-12 focus-visible:ring-white/20",
             isDragging
               ? "border-white/30 bg-white/5"
-              : "border-[#2a2a2a] bg-[#080808] hover:border-[#3a3a3a]",
+              : "border-[#2a2a2a] bg-[#080808] hover:border-[#3a3a3a] hover:bg-[#080808]",
           )}
         >
           <div className="rounded-full border border-[#2a2a2a] p-3">
@@ -82,7 +83,7 @@ export function DropZone() {
             </p>
           </div>
           {error && <p className="text-xs text-red-400">{error}</p>}
-        </button>
+        </Button>
 
         <input
           ref={inputRef}

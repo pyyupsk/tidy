@@ -1,6 +1,14 @@
 "use client"
 
 import { IconDownload, IconFile, IconUpload } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
 export function TopBar() {
@@ -29,37 +37,39 @@ export function TopBar() {
           </div>
         )}
         {sheetNames.length > 1 && activeSheet && (
-          <select
-            value={activeSheet}
-            onChange={(e) => switchSheet(e.target.value)}
-            className="cursor-pointer rounded border border-[#2a2a2a] bg-transparent px-1.5 py-0.5 font-mono text-xs text-zinc-400 outline-none focus:border-zinc-600"
-          >
-            {sheetNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <Select value={activeSheet} onValueChange={(v) => v && switchSheet(v)}>
+            <SelectTrigger className="h-6 w-auto min-w-[100px] font-mono text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sheetNames.map((name) => (
+                <SelectItem
+                  key={name}
+                  value={name}
+                  className="font-mono text-xs"
+                >
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={reset}
-          className="flex cursor-pointer items-center gap-1.5 rounded border border-[#2a2a2a] px-2.5 py-1 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+          className="gap-1.5 text-xs"
         >
           <IconUpload size={11} />
           Upload new
-        </button>
-        <button
-          type="button"
-          onClick={exportFile}
-          className="flex cursor-pointer items-center gap-1.5 rounded bg-white px-2.5 py-1 text-xs font-medium text-black transition-colors hover:bg-zinc-200"
-        >
+        </Button>
+        <Button size="sm" onClick={exportFile} className="gap-1.5 text-xs">
           <IconDownload size={11} />
           Export .xlsx
-        </button>
+        </Button>
       </div>
     </header>
   )
