@@ -7,6 +7,7 @@ import {
   selectNullCount,
   useSpreadsheetStore,
 } from "@/stores/use-spreadsheet-store"
+import { PropsWithChildren } from "react"
 
 export function StatsBar() {
   const headers = useSpreadsheetStore((s) => s.headers)
@@ -50,7 +51,7 @@ function StatItem({
   label,
   value,
   children,
-}: Readonly<{ label: string; value?: string; children?: React.ReactNode }>) {
+}: Readonly<PropsWithChildren<{ label: string; value?: string }>>) {
   return (
     <div className="flex items-center gap-1.5 text-xs text-zinc-500">
       <span>{label}</span>

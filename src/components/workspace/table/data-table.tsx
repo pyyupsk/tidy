@@ -11,6 +11,20 @@ import { TablePagination } from "./table-pagination"
 
 const PAGE_SIZE = 50
 
+function CellContent({
+  val,
+  fillPreview,
+  isNull,
+}: Readonly<{ val: unknown; fillPreview: unknown; isNull: boolean }>) {
+  if (isNull && fillPreview === undefined) return "null"
+  const display = fillPreview === undefined ? val : fillPreview
+  return (
+    <span className="line-clamp-3 whitespace-pre-line" title={String(display as string)}>
+      {String(display as string)}
+    </span>
+  )
+}
+
 export function DataTable() {
   const headers = useSpreadsheetStore((s) => s.headers)
   const rows = useSpreadsheetStore((s) => s.rows)
@@ -93,29 +107,17 @@ export function DataTable() {
                         className={cn(
                           "max-w-[280px] border-b border-r border-border px-3 py-1.5 font-mono text-zinc-400",
                           isNull &&
-                            !isFilled &&
-                            "bg-red-950/20 italic text-red-500/50",
+                          !isFilled &&
+                          "bg-red-950/20 italic text-red-500/50",
                           isFilled &&
-                            "bg-green-950/20 italic text-green-400/70",
+                          "bg-green-950/20 italic text-green-400/70",
                         )}
                       >
-                        {isNull && !isFilled ? (
-                          "null"
-                        ) : isFilled ? (
-                          <span
-                            className="line-clamp-3 whitespace-pre-line"
-                            title={String(fillPreview)}
-                          >
-                            {String(fillPreview)}
-                          </span>
-                        ) : (
-                          <span
-                            className="line-clamp-3 whitespace-pre-line"
-                            title={String(val)}
-                          >
-                            {String(val)}
-                          </span>
-                        )}
+                        <CellContent
+                          val={val}
+                          fillPreview={fillPreview}
+                          isNull={isNull}
+                        />
                       </td>
                     )
                   })}
