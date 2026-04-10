@@ -46,8 +46,8 @@ export function DropZone() {
   )
 
   return (
-    <div className="flex min-h-dvh flex-col bg-black">
-      <header className="flex h-11 items-center border-b border-[#1a1a1a] px-4">
+    <div className="flex min-h-dvh flex-col bg-background">
+      <header className="flex h-11 items-center border-b border-border px-4">
         <span className="text-sm font-semibold tracking-tight text-white">
           tidy
         </span>
@@ -68,10 +68,10 @@ export function DropZone() {
             "flex h-auto w-full max-w-sm flex-col items-center gap-4 rounded-lg border border-dashed p-12 focus-visible:ring-white/20",
             isDragging
               ? "border-white/30 bg-white/5"
-              : "border-[#2a2a2a] bg-[#080808] hover:border-[#3a3a3a] hover:bg-[#080808]",
+              : "border-border-subtle bg-card hover:border-border-subtle/60 hover:bg-card",
           )}
         >
-          <div className="rounded-full border border-[#2a2a2a] p-3">
+          <div className="rounded-full border border-border-subtle p-3">
             <IconUpload size={20} className="text-zinc-500" />
           </div>
           <div className="text-center">

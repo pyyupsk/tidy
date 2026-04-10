@@ -18,7 +18,7 @@ export function StatsBar() {
   const cleanCount = selectCleanRowCount({ rows, headers, duplicateKeys })
 
   return (
-    <div className="flex shrink-0 items-center gap-4 border-b border-[#1a1a1a] bg-[#080808] px-4 py-2">
+    <div className="flex shrink-0 items-center gap-4 border-b border-border bg-card px-4 py-2">
       <StatItem label="Rows" value={rows.length.toLocaleString()} />
       <Sep />
       <StatItem label="Cols" value={headers.length.toString()} />
@@ -41,7 +41,7 @@ export function StatsBar() {
 }
 
 function Sep() {
-  return <div className="h-3 w-px bg-[#222]" />
+  return <div className="h-3 w-px bg-border" />
 }
 
 function StatItem({

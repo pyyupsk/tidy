@@ -21,13 +21,13 @@ export function TopBar() {
   const reset = useSpreadsheetStore((s) => s.reset)
 
   return (
-    <header className="flex h-11 shrink-0 items-center justify-between border-b border-[#1a1a1a] bg-black px-4">
+    <header className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-background px-4">
       <div className="flex items-center gap-3">
         <span className="text-sm font-semibold tracking-tight text-white">
           tidy
         </span>
         {fileName && (
-          <div className="flex items-center gap-1.5 rounded border border-[#2a2a2a] px-2 py-0.5">
+          <div className="flex items-center gap-1.5 rounded border border-border-subtle px-2 py-0.5">
             <IconFile size={11} className="text-zinc-600" />
             <span className="font-mono text-xs text-zinc-200">{fileName}</span>
             <span className="text-zinc-700">·</span>

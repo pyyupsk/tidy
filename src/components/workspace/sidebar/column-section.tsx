@@ -30,7 +30,7 @@ export function ColumnSection() {
                   "flex size-3 shrink-0 items-center justify-center rounded border transition-colors",
                   dropped
                     ? "border-white bg-white"
-                    : "border-[#333] bg-transparent hover:border-zinc-500",
+                    : "border-ring bg-transparent hover:border-muted-foreground",
                 )}
               >
                 {dropped && (

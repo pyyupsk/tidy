@@ -35,13 +35,13 @@ export function DataTable() {
         <table className="w-full border-collapse text-xs">
           <thead>
             <tr>
-              <th className="sticky top-0 z-10 w-10 border-b border-r border-[#1a1a1a] bg-[#080808] px-3 py-1.5 text-right font-mono text-[10px] font-medium uppercase tracking-widest text-zinc-700">
+              <th className="sticky top-0 z-10 w-10 border-b border-r border-border bg-card px-3 py-1.5 text-right font-mono text-[10px] font-medium uppercase tracking-widest text-zinc-700">
                 #
               </th>
               {visibleHeaders.map((h) => (
                 <th
                   key={h}
-                  className="sticky top-0 z-10 whitespace-nowrap border-b border-r border-[#1a1a1a] bg-[#080808] px-3 py-1.5 text-left font-mono text-[10px] font-medium uppercase tracking-wide text-zinc-500"
+                  className="sticky top-0 z-10 whitespace-nowrap border-b border-r border-border bg-card px-3 py-1.5 text-left font-mono text-[10px] font-medium uppercase tracking-wide text-zinc-500"
                 >
                   {h}
                 </th>
@@ -56,7 +56,7 @@ export function DataTable() {
                 <tr key={absIndex} className={cn(isDupe && "bg-amber-950/10")}>
                   <td
                     className={cn(
-                      "border-b border-r border-[#0f0f0f] px-3 py-1.5 text-right font-mono text-[10px] text-zinc-700",
+                      "border-b border-r border-surface-dim px-3 py-1.5 text-right font-mono text-[10px] text-zinc-700",
                       isDupe && "border-l-2 border-l-amber-500/40",
                     )}
                   >
@@ -69,7 +69,7 @@ export function DataTable() {
                       <td
                         key={h}
                         className={cn(
-                          "max-w-[280px] border-b border-r border-[#0f0f0f] px-3 py-1.5 font-mono text-zinc-400",
+                          "max-w-[280px] border-b border-r border-surface-dim px-3 py-1.5 font-mono text-zinc-400",
                           isNull && "bg-red-950/20 italic text-red-500/50",
                         )}
                       >
@@ -94,7 +94,7 @@ export function DataTable() {
       </div>
 
       {/* Bottom bar */}
-      <div className="flex shrink-0 items-center justify-between border-t border-[#1a1a1a] bg-[#080808] px-4 py-2">
+      <div className="flex shrink-0 items-center justify-between border-t border-border bg-card px-4 py-2">
         <p className="text-[10px] text-zinc-600">
           Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, rows.length)}{" "}
           of {rows.length.toLocaleString()}
