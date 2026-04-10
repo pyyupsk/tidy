@@ -136,4 +136,27 @@ describe("applyFillRules", () => {
     applyFillRules(rows, { a: { type: "literal", value: "x" } })
     expect(rows[0].a).toBe(null)
   })
+
+  it("forward-fills null with the value from the previous non-null row in that column", () => {
+    const rows = [{ a: "x" }, { a: null }, { a: null }, { a: "y" }]
+    const result = applyFillRules(rows, { a: { type: "forward" } })
+    expect(result[0].a).toBe("x")
+    expect(result[1].a).toBe("x")
+    expect(result[2].a).toBe("x")
+    expect(result[3].a).toBe("y")
+  })
+
+  it("leaves null as-is for forward-fill when no prior non-null value exists", () => {
+    const rows = [{ a: null }, { a: null }, { a: "z" }]
+    const result = applyFillRules(rows, { a: { type: "forward" } })
+    expect(result[0].a).toBe(null)
+    expect(result[1].a).toBe(null)
+    expect(result[2].a).toBe("z")
+  })
+
+  it("does not mutate the original rows for forward-fill", () => {
+    const rows = [{ a: "x" }, { a: null }]
+    applyFillRules(rows, { a: { type: "forward" } })
+    expect(rows[1].a).toBe(null)
+  })
 })

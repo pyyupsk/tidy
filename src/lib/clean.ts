@@ -65,9 +65,20 @@ export function applyFillRules(
     }
   }
 
+  // Track last seen non-null value per column for forward-fill
+  const lastSeen: Record<string, unknown> = {}
+
   return rows.map((row) => {
     const next = { ...row }
     for (const [col, rule] of Object.entries(rules)) {
+      if (rule.type === "forward") {
+        if (!isNullish(row[col])) {
+          lastSeen[col] = row[col]
+        } else if (lastSeen[col] !== undefined) {
+          next[col] = lastSeen[col]
+        }
+        continue
+      }
       if (!isNullish(row[col])) continue
       if (rule.type === "literal") next[col] = rule.value
       else if (rule.type === "median") next[col] = medians[col]

@@ -23,6 +23,7 @@ function ruleToFillType(rule: FillRule | undefined): FillType {
   if (!rule) return "none"
   if (rule.type === "median") return "median"
   if (rule.type === "empty") return "empty"
+  if (rule.type === "forward") return "none"
   if (typeof rule.value === "number") return "number"
   return "string"
 }
@@ -35,6 +36,7 @@ function ruleToInputValue(rule: FillRule | undefined): string {
 function formatDisplay(rule: FillRule, medianDisplay: string): string {
   if (rule.type === "median") return `median (${medianDisplay})`
   if (rule.type === "empty") return '""'
+  if (rule.type === "forward") return "forward"
   if (typeof rule.value === "number") return String(rule.value)
   return `"${rule.value}"`
 }
