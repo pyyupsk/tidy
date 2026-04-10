@@ -1,3 +1,4 @@
+import type * as XLSX from "xlsx"
 import { create } from "zustand"
 import {
   applyDropColumns,
@@ -6,18 +7,23 @@ import {
   isNullish,
   type Row,
 } from "@/lib/clean"
-import { exportXlsx, parseXlsx } from "@/lib/xlsx"
+import { exportXlsx, parseSheet, readWorkbook } from "@/lib/xlsx"
 import type { FillRule } from "@/types/spreadsheet"
 import { safe } from "@/utils/safe"
 
 type SpreadsheetStore = {
   fileName: string | null
+  sheetNames: string[]
+  activeSheet: string | null
   headers: string[]
   rows: Row[]
   duplicateKeys: string[]
   droppedColumns: string[]
   fillRules: Record<string, FillRule>
+  // internal — workbook kept in memory for sheet switching
+  _workbook: XLSX.WorkBook | null
   loadFile: (file: File) => Promise<void>
+  switchSheet: (sheetName: string) => void
   toggleDuplicateKey: (col: string) => void
   toggleDropColumn: (col: string) => void
   setFillRule: (col: string, rule: FillRule) => void
@@ -28,35 +34,64 @@ type SpreadsheetStore = {
 
 const initialState = {
   fileName: null,
+  sheetNames: [],
+  activeSheet: null,
   headers: [],
   rows: [],
   duplicateKeys: [],
   droppedColumns: [],
   fillRules: {},
+  _workbook: null,
 } satisfies Pick<
   SpreadsheetStore,
   | "fileName"
+  | "sheetNames"
+  | "activeSheet"
   | "headers"
   | "rows"
   | "duplicateKeys"
   | "droppedColumns"
   | "fillRules"
+  | "_workbook"
 >
 
 export const useSpreadsheetStore = create<SpreadsheetStore>((set, get) => ({
   ...initialState,
 
   loadFile: async (file) => {
-    const [err, result] = await safe(parseXlsx(file))
+    const [err, workbook] = await safe(readWorkbook(file))
     if (err) {
       console.error("Failed to parse xlsx:", err.message)
       return
     }
+    const sheetNames = workbook.SheetNames
+    const activeSheet = sheetNames[0] ?? null
+    const { headers, rows } = activeSheet
+      ? parseSheet(workbook, activeSheet)
+      : { headers: [], rows: [] }
     set({
       ...initialState,
+      _workbook: workbook,
       fileName: file.name,
-      headers: result.headers,
-      rows: result.rows,
+      sheetNames,
+      activeSheet,
+      headers,
+      rows,
+    })
+  },
+
+  switchSheet: (sheetName) => {
+    const { _workbook } = get()
+    if (!_workbook) return
+    const { headers, rows } = parseSheet(_workbook, sheetName)
+    set({
+      activeSheet: sheetName,
+      headers,
+      rows,
+      // reset cleaning config when switching sheets
+      duplicateKeys: [],
+      droppedColumns: [],
+      fillRules: {},
     })
   },
 

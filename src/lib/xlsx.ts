@@ -1,16 +1,19 @@
 import * as XLSX from "xlsx"
 import type { Row } from "@/lib/clean"
 
-export async function parseXlsx(
-  file: File,
-): Promise<{ headers: string[]; rows: Row[] }> {
+export async function readWorkbook(file: File): Promise<XLSX.WorkBook> {
   const buffer = await file.arrayBuffer()
-  const workbook = XLSX.read(buffer, { type: "array", cellDates: true })
-  const sheet = workbook.Sheets[workbook.SheetNames[0]]
+  return XLSX.read(buffer, { type: "array", cellDates: true })
+}
+
+export function parseSheet(
+  workbook: XLSX.WorkBook,
+  sheetName: string,
+): { headers: string[]; rows: Row[] } {
+  const sheet = workbook.Sheets[sheetName]
+  if (!sheet) return { headers: [], rows: [] }
   const raw = XLSX.utils.sheet_to_json<Row>(sheet, { defval: null, raw: false })
-
   if (raw.length === 0) return { headers: [], rows: [] }
-
   const headers = Object.keys(raw[0])
   return { headers, rows: raw }
 }

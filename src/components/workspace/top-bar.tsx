@@ -6,12 +6,15 @@ import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 export function TopBar() {
   const fileName = useSpreadsheetStore((s) => s.fileName)
   const rows = useSpreadsheetStore((s) => s.rows)
+  const sheetNames = useSpreadsheetStore((s) => s.sheetNames)
+  const activeSheet = useSpreadsheetStore((s) => s.activeSheet)
+  const switchSheet = useSpreadsheetStore((s) => s.switchSheet)
   const exportFile = useSpreadsheetStore((s) => s.exportFile)
   const reset = useSpreadsheetStore((s) => s.reset)
 
   return (
     <header className="flex h-11 shrink-0 items-center justify-between border-b border-[#1a1a1a] bg-black px-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <span className="text-sm font-semibold tracking-tight text-white">
           tidy
         </span>
@@ -24,6 +27,19 @@ export function TopBar() {
               {rows.length.toLocaleString()} rows
             </span>
           </div>
+        )}
+        {sheetNames.length > 1 && activeSheet && (
+          <select
+            value={activeSheet}
+            onChange={(e) => switchSheet(e.target.value)}
+            className="cursor-pointer rounded border border-[#2a2a2a] bg-transparent px-1.5 py-0.5 font-mono text-xs text-zinc-400 outline-none focus:border-zinc-600"
+          >
+            {sheetNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         )}
       </div>
 
