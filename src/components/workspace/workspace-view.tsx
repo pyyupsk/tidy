@@ -7,7 +7,7 @@ import { TopBar } from "./top-bar"
 
 export function WorkspaceView() {
   return (
-    <div className="flex min-h-dvh flex-col bg-black">
+    <div className="flex h-dvh flex-col bg-black">
       <TopBar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />

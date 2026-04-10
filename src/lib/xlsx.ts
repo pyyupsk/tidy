@@ -38,7 +38,12 @@ export function parseSheet(
     return row
   })
 
-  return { headers, rows }
+  let end = rows.length
+  while (end > 0 && headers.every((h) => rows[end - 1][h] === null)) {
+    end--
+  }
+
+  return { headers, rows: rows.slice(0, end) }
 }
 
 export function exportXlsx(
