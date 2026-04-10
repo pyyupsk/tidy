@@ -17,6 +17,7 @@ type SpreadsheetStore = {
   activeSheet: string | null
   headers: string[]
   rows: Row[]
+  columnLabels: Record<string, string>
   duplicateKeys: string[]
   droppedColumns: string[]
   fillRules: Record<string, FillRule>
@@ -38,6 +39,7 @@ const initialState = {
   activeSheet: null,
   headers: [],
   rows: [],
+  columnLabels: {},
   duplicateKeys: [],
   droppedColumns: [],
   fillRules: {},
@@ -49,6 +51,7 @@ const initialState = {
   | "activeSheet"
   | "headers"
   | "rows"
+  | "columnLabels"
   | "duplicateKeys"
   | "droppedColumns"
   | "fillRules"
@@ -66,9 +69,9 @@ export const useSpreadsheetStore = create<SpreadsheetStore>((set, get) => ({
     }
     const sheetNames = workbook.SheetNames
     const activeSheet = sheetNames[0] ?? null
-    const { headers, rows } = activeSheet
+    const { headers, rows, columnLabels } = activeSheet
       ? parseSheet(workbook, activeSheet)
-      : { headers: [], rows: [] }
+      : { headers: [], rows: [], columnLabels: {} }
     set({
       ...initialState,
       _workbook: workbook,
@@ -77,17 +80,19 @@ export const useSpreadsheetStore = create<SpreadsheetStore>((set, get) => ({
       activeSheet,
       headers,
       rows,
+      columnLabels,
     })
   },
 
   switchSheet: (sheetName) => {
     const { _workbook } = get()
     if (!_workbook) return
-    const { headers, rows } = parseSheet(_workbook, sheetName)
+    const { headers, rows, columnLabels } = parseSheet(_workbook, sheetName)
     set({
       activeSheet: sheetName,
       headers,
       rows,
+      columnLabels,
       // reset cleaning config when switching sheets
       duplicateKeys: [],
       droppedColumns: [],

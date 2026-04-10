@@ -10,6 +10,7 @@ import {
 export function DuplicateSection() {
   const headers = useSpreadsheetStore((s) => s.headers)
   const rows = useSpreadsheetStore((s) => s.rows)
+  const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
   const toggleDuplicateKey = useSpreadsheetStore((s) => s.toggleDuplicateKey)
 
@@ -42,7 +43,7 @@ export function DuplicateSection() {
                     active ? "bg-green-400" : "bg-zinc-700",
                   )}
                 />
-                {h}
+                {columnLabels[h] ?? h}
               </Button>
             )
           })}

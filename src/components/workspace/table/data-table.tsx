@@ -14,6 +14,7 @@ const PAGE_SIZE = 50
 export function DataTable() {
   const headers = useSpreadsheetStore((s) => s.headers)
   const rows = useSpreadsheetStore((s) => s.rows)
+  const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
   const [currentPage, setCurrentPage] = useState(1)
@@ -43,7 +44,7 @@ export function DataTable() {
                   key={h}
                   className="sticky top-0 z-10 whitespace-nowrap border-b border-r border-border bg-card px-3 py-1.5 text-left font-mono text-[10px] font-medium uppercase tracking-wide text-zinc-500"
                 >
-                  {h}
+                  {columnLabels[h] ?? h}
                 </th>
               ))}
             </tr>

@@ -5,6 +5,7 @@ import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
 export function ColumnSection() {
   const headers = useSpreadsheetStore((s) => s.headers)
+  const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
   const toggleDropColumn = useSpreadsheetStore((s) => s.toggleDropColumn)
 
@@ -41,8 +42,8 @@ export function ColumnSection() {
                     fill="none"
                     className="block"
                     aria-label="checked"
-                    role="img"
                   >
+                    <title>checked</title>
                     <path
                       d="M1 3L3 5L7 1"
                       stroke="#000"
@@ -59,7 +60,7 @@ export function ColumnSection() {
                   dropped ? "text-zinc-500 line-through" : "text-zinc-400",
                 )}
               >
-                {h}
+                {columnLabels[h] ?? h}
               </span>
             </button>
           )

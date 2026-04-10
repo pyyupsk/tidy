@@ -9,12 +9,12 @@ export async function readWorkbook(file: File): Promise<XLSX.WorkBook> {
 export function parseSheet(
   workbook: XLSX.WorkBook,
   sheetName: string,
-): { headers: string[]; rows: Row[] } {
+): { headers: string[]; rows: Row[]; columnLabels: Record<string, string> } {
   const sheet = workbook.Sheets[sheetName]
-  if (!sheet) return { headers: [], rows: [] }
+  if (!sheet) return { headers: [], rows: [], columnLabels: {} }
 
   const ref = sheet["!ref"]
-  if (!ref) return { headers: [], rows: [] }
+  if (!ref) return { headers: [], rows: [], columnLabels: {} }
 
   const range = XLSX.utils.decode_range(ref)
 
@@ -43,7 +43,21 @@ export function parseSheet(
     end--
   }
 
-  return { headers, rows: rows.slice(0, end) }
+  const trimmed = rows.slice(0, end)
+
+  // Derive display labels from row 0 — if a cell has a non-empty string value
+  // use it as the column label (e.g. A → "id"), otherwise fall back to the letter.
+  const columnLabels: Record<string, string> = {}
+  if (trimmed.length > 0) {
+    for (const h of headers) {
+      const v = trimmed[0][h]
+      if (typeof v === "string" && v.trim() !== "") {
+        columnLabels[h] = v.trim()
+      }
+    }
+  }
+
+  return { headers, rows: trimmed, columnLabels }
 }
 
 export function exportXlsx(

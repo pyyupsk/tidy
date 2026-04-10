@@ -26,13 +26,14 @@ function ruleToFillType(rule: FillRule | undefined): FillType {
 }
 
 function ruleToInputValue(rule: FillRule | undefined): string {
-  if (!rule || rule.type !== "literal") return ""
+  if (rule?.type !== "literal") return ""
   return String(rule.value)
 }
 
 export function FillSection() {
   const rows = useSpreadsheetStore((s) => s.rows)
   const headers = useSpreadsheetStore((s) => s.headers)
+  const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const fillRules = useSpreadsheetStore((s) => s.fillRules)
   const setFillRule = useSpreadsheetStore((s) => s.setFillRule)
   const removeFillRule = useSpreadsheetStore((s) => s.removeFillRule)
@@ -95,7 +96,7 @@ export function FillSection() {
               key={col}
               className="mb-2 flex flex-col gap-1 border-b border-border pb-2 last:border-none last:pb-0"
             >
-              <span className="font-mono text-[10px] text-zinc-500">{col}</span>
+              <span className="font-mono text-[10px] text-zinc-500">{columnLabels[col] ?? col}</span>
               <div className="flex gap-1">
                 <Select
                   value={fillType}
