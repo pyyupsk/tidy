@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils"
+
 const sizes = {
   sm: { icon: 16, text: "text-sm", gap: "gap-1.5" },
   md: { icon: 24, text: "text-lg", gap: "gap-2" },
@@ -11,7 +13,7 @@ export function Logo({ size = "md" }: Readonly<LogoProps>) {
   const { icon, text, gap } = sizes[size]
 
   return (
-    <div className={`flex items-center ${gap}`}>
+    <div className={cn("flex items-center", gap)}>
       <svg
         width={icon}
         height={icon}
@@ -95,7 +97,10 @@ export function Logo({ size = "md" }: Readonly<LogoProps>) {
         />
       </svg>
       <span
-        className={`font-sans font-medium tracking-tight text-foreground ${text}`}
+        className={cn(
+          "font-sans font-medium tracking-tight text-foreground",
+          text,
+        )}
       >
         tidy
       </span>
