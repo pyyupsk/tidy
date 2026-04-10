@@ -66,16 +66,16 @@ export function applyFillRules(
   }
 
   // Track last seen non-null value per column for forward-fill
-  const lastSeen: Record<string, unknown> = {}
+  const lastSeen = new Map<string, unknown>()
 
   return rows.map((row) => {
     const next = { ...row }
     for (const [col, rule] of Object.entries(rules)) {
       if (rule.type === "forward") {
         if (!isNullish(row[col])) {
-          lastSeen[col] = row[col]
-        } else if (lastSeen[col] !== undefined) {
-          next[col] = lastSeen[col]
+          lastSeen.set(col, row[col])
+        } else if (lastSeen.has(col)) {
+          next[col] = lastSeen.get(col)
         }
         continue
       }

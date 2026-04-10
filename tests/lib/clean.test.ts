@@ -159,4 +159,20 @@ describe("applyFillRules", () => {
     applyFillRules(rows, { a: { type: "forward" } })
     expect(rows[1].a).toBe(null)
   })
+
+  it("tracks forward-fill state independently per column", () => {
+    const rows = [
+      { a: "x", b: null },
+      { a: null, b: "y" },
+      { a: null, b: null },
+    ]
+    const result = applyFillRules(rows, {
+      a: { type: "forward" },
+      b: { type: "forward" },
+    })
+    expect(result[1].a).toBe("x") // a forward-filled from row 0
+    expect(result[1].b).toBe("y") // b has its own value
+    expect(result[2].a).toBe("x") // a still forward-fills
+    expect(result[2].b).toBe("y") // b forward-fills from row 1
+  })
 })
