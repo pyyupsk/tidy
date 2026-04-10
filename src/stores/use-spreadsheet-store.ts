@@ -309,6 +309,13 @@ export function selectAllNullColumns(
   )
 }
 
+/**
+ * Returns the number of rows that will remain after deduplication.
+ *
+ * NOTE: `state.rows` must already be the *effective* rows (i.e. with
+ * `skipFirstRow` applied). Pass `useEffectiveRows()` output at the call site,
+ * not the raw store rows. See `StatsBar` for the correct usage pattern.
+ */
 export function selectCleanRowCount(state: StoreSlice): number {
   return state.rows.length - selectDuplicateIndices(state).size
 }
