@@ -23,7 +23,7 @@ type SpreadsheetStore = {
   fillRules: Record<string, FillRule>
   // internal — workbook kept in memory for sheet switching
   _workbook: XLSX.WorkBook | null
-  loadFile: (file: File) => Promise<void>
+  loadFile: (file: File) => Promise<string | null>
   switchSheet: (sheetName: string) => void
   toggleDuplicateKey: (col: string) => void
   toggleDropColumn: (col: string) => void
@@ -65,7 +65,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>((set, get) => ({
     const [err, workbook] = await safe(readWorkbook(file))
     if (err) {
       console.error("Failed to parse xlsx:", err.message)
-      return
+      return err.message
     }
     const sheetNames = workbook.SheetNames
     const activeSheet = sheetNames[0] ?? null
@@ -82,6 +82,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>((set, get) => ({
       rows,
       columnLabels,
     })
+    return null
   },
 
   switchSheet: (sheetName) => {

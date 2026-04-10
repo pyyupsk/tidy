@@ -96,7 +96,9 @@ export function FillSection() {
               key={col}
               className="mb-2 flex flex-col gap-1 border-b border-border pb-2 last:border-none last:pb-0"
             >
-              <span className="font-mono text-[10px] text-zinc-500">{columnLabels[col] ?? col}</span>
+              <span className="font-mono text-[10px] text-zinc-500">
+                {columnLabels[col] ?? col}
+              </span>
               <div className="flex gap-1">
                 <Select
                   value={fillType}

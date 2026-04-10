@@ -21,8 +21,11 @@ export function DropZone() {
       }
       setError(null)
       setIsLoading(true)
-      await loadFile(file)
+      const err = await loadFile(file)
       setIsLoading(false)
+      if (err) {
+        setError(`Failed to read file: ${err}`)
+      }
     },
     [loadFile],
   )

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { isNullish } from "@/lib/clean"
+import { useMemo, useState } from "react"
+import { computeMedian, isNullish } from "@/lib/clean"
 import { cn } from "@/lib/utils"
 import {
   selectDuplicateIndices,
@@ -17,7 +17,24 @@ export function DataTable() {
   const columnLabels = useSpreadsheetStore((s) => s.columnLabels)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
+  const fillRules = useSpreadsheetStore((s) => s.fillRules)
   const [currentPage, setCurrentPage] = useState(1)
+
+  // Pre-compute fill preview values (medians need all rows)
+  const fillPreviewValues = useMemo(() => {
+    const preview: Record<string, unknown> = {}
+    for (const [col, rule] of Object.entries(fillRules)) {
+      if (rule.type === "literal") preview[col] = rule.value
+      else if (rule.type === "empty") preview[col] = '""'
+      else if (rule.type === "median") {
+        const nums = rows
+          .map((r) => r[col])
+          .filter((v): v is number => typeof v === "number")
+        preview[col] = computeMedian(nums)
+      }
+    }
+    return preview
+  }, [fillRules, rows])
 
   const dupeIndices = selectDuplicateIndices({ rows, duplicateKeys })
   const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
@@ -66,16 +83,31 @@ export function DataTable() {
                   {visibleHeaders.map((h) => {
                     const val = row[h]
                     const isNull = isNullish(val)
+                    const fillPreview = isNull
+                      ? fillPreviewValues[h]
+                      : undefined
+                    const isFilled = fillPreview !== undefined
                     return (
                       <td
                         key={h}
                         className={cn(
                           "max-w-[280px] border-b border-r border-border px-3 py-1.5 font-mono text-zinc-400",
-                          isNull && "bg-red-950/20 italic text-red-500/50",
+                          isNull &&
+                            !isFilled &&
+                            "bg-red-950/20 italic text-red-500/50",
+                          isFilled &&
+                            "bg-green-950/20 italic text-green-400/70",
                         )}
                       >
-                        {isNull ? (
+                        {isNull && !isFilled ? (
                           "null"
+                        ) : isFilled ? (
+                          <span
+                            className="line-clamp-3 whitespace-pre-line"
+                            title={String(fillPreview)}
+                          >
+                            {String(fillPreview)}
+                          </span>
                         ) : (
                           <span
                             className="line-clamp-3 whitespace-pre-line"
@@ -103,6 +135,10 @@ export function DataTable() {
           <span className="text-amber-500/60">amber rows = duplicates</span>
           {" · "}
           <span className="text-red-500/60">red cells = null</span>
+          {" · "}
+          <span className="text-green-500/60">
+            green cells = will be filled
+          </span>
         </p>
         <TablePagination
           currentPage={currentPage}

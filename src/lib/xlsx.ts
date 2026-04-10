@@ -33,7 +33,7 @@ export function parseSheet(
   const rows: Row[] = raw.map((arr) => {
     const row: Row = {}
     headers.forEach((h, i) => {
-      row[h] = (arr)[i] ?? null
+      row[h] = arr[i] ?? null
     })
     return row
   })

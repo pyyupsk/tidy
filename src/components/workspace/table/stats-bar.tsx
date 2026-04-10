@@ -12,16 +12,18 @@ export function StatsBar() {
   const headers = useSpreadsheetStore((s) => s.headers)
   const rows = useSpreadsheetStore((s) => s.rows)
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
+  const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
 
   const dupeCount = selectDuplicateIndices({ rows, duplicateKeys }).size
   const nullCount = selectNullCount({ rows, headers })
   const cleanCount = selectCleanRowCount({ rows, headers, duplicateKeys })
+  const effectiveCols = headers.length - droppedColumns.length
 
   return (
     <div className="flex shrink-0 items-center gap-4 border-b border-border bg-card px-4 py-2">
       <StatItem label="Rows" value={rows.length.toLocaleString()} />
       <Sep />
-      <StatItem label="Cols" value={headers.length.toString()} />
+      <StatItem label="Cols" value={effectiveCols.toString()} />
       <Sep />
       <StatItem label="Nulls">
         <Badge value={nullCount} warn={nullCount > 0} color="red" />
@@ -33,7 +35,7 @@ export function StatsBar() {
       <Sep />
       <StatItem label="After clean">
         <span className="rounded bg-green-950 px-1.5 py-0.5 font-mono text-xs text-green-400">
-          {cleanCount.toLocaleString()} rows
+          {cleanCount.toLocaleString()} rows × {effectiveCols} cols
         </span>
       </StatItem>
     </div>
