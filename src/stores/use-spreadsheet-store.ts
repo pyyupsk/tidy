@@ -8,7 +8,11 @@ import {
   isNullish,
   type Row,
 } from "@/lib/clean"
-import { clearStoredBuffer, writeStoredBuffer } from "@/lib/session-storage"
+import {
+  clearStoredBuffer,
+  markSessionSaveSkipped,
+  writeStoredBuffer,
+} from "@/lib/session-storage"
 import { exportXlsx, parseSheet, readWorkbook } from "@/lib/xlsx"
 import type { FillRule } from "@/types/spreadsheet"
 import { safe } from "@/utils/safe"
@@ -121,7 +125,8 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           skipFirstRow: headerDetected,
           headerDetected,
         })
-        writeStoredBuffer(buffer)
+        const saved = writeStoredBuffer(buffer)
+        if (!saved) markSessionSaveSkipped()
         return null
       },
 
@@ -141,6 +146,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           ? parseSheet(workbook, activeSheet)
           : { headers: [], rows: [], columnLabels: {} }
         const headerDetected = detectHeaderRow(headers, rows)
+        const { duplicateKeys, droppedColumns } = get()
         set({
           _workbook: workbook,
           sheetNames,
@@ -149,6 +155,8 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           rows,
           columnLabels,
           headerDetected,
+          duplicateKeys: duplicateKeys.filter((k) => headers.includes(k)),
+          droppedColumns: droppedColumns.filter((c) => headers.includes(c)),
         })
         return null
       },
@@ -238,7 +246,12 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           effectiveDupeKeys,
         )
         const afterDedupe = afterDrop.filter((_, i) => !dupeIndices.has(i))
-        const cleaned = applyFillRules(afterDedupe, fillRules)
+        const effectiveFillRules = Object.fromEntries(
+          Object.entries(fillRules).filter(([col]) =>
+            cleanHeaders.includes(col),
+          ),
+        )
+        const cleaned = applyFillRules(afterDedupe, effectiveFillRules)
 
         const baseName = fileName.replace(/\.xlsx$/i, "")
         exportXlsx(

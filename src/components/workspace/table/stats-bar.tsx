@@ -1,6 +1,7 @@
 "use client"
 
 import type { PropsWithChildren } from "react"
+import { useMemo } from "react"
 import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { cn } from "@/lib/utils"
 import {
@@ -16,9 +17,18 @@ export function StatsBar() {
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
 
-  const dupeCount = selectDuplicateIndices({ rows, duplicateKeys }).size
-  const nullCount = selectNullCount({ rows, headers })
-  const cleanCount = selectCleanRowCount({ rows, headers, duplicateKeys })
+  const dupeCount = useMemo(
+    () => selectDuplicateIndices({ rows, duplicateKeys }).size,
+    [rows, duplicateKeys],
+  )
+  const nullCount = useMemo(
+    () => selectNullCount({ rows, headers }),
+    [rows, headers],
+  )
+  const cleanCount = useMemo(
+    () => selectCleanRowCount({ rows, headers, duplicateKeys }),
+    [rows, headers, duplicateKeys],
+  )
   const effectiveCols = headers.length - droppedColumns.length
 
   return (

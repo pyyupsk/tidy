@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it } from "vitest"
 import {
   clearStoredBuffer,
   consumeRestored,
+  consumeSessionSaveSkipped,
   hasStoredBuffer,
   markRestored,
+  markSessionSaveSkipped,
   readStoredBuffer,
   writeStoredBuffer,
 } from "@/lib/session-storage"
@@ -44,10 +46,31 @@ describe("writeStoredBuffer / readStoredBuffer", () => {
     expect(readStoredBuffer()).toBeNull()
   })
 
-  it("silently skips writing when buffer exceeds 4 MB", () => {
-    const big = new ArrayBuffer(4 * 1024 * 1024 + 1)
-    writeStoredBuffer(big)
+  it("returns true on a successful write", () => {
+    const buf = new Uint8Array([1, 2, 3]).buffer
+    expect(writeStoredBuffer(buf)).toBe(true)
+  })
+
+  it("returns false and does not store when buffer exceeds the raw limit (~3 MB)", () => {
+    const big = new ArrayBuffer(Math.floor(4 * 1024 * 1024 * 0.75) + 1)
+    expect(writeStoredBuffer(big)).toBe(false)
     expect(readStoredBuffer()).toBeNull()
+  })
+
+  it("accepts a buffer exactly at the raw limit", () => {
+    const atLimit = new ArrayBuffer(Math.floor(4 * 1024 * 1024 * 0.75))
+    expect(writeStoredBuffer(atLimit)).toBe(true)
+  })
+
+  it("chunked base64 round-trip near 0x8000 bytes", () => {
+    // Verifies the chunked btoa path handles buffers that straddle chunk boundaries
+    const size = 0x8000 + 7
+    const bytes = new Uint8Array(size)
+    for (let i = 0; i < size; i++) bytes[i] = i % 256
+    writeStoredBuffer(bytes.buffer)
+    const result = readStoredBuffer()
+    if (!result) throw new Error("Expected buffer to be stored")
+    expect(new Uint8Array(result)).toEqual(bytes)
   })
 })
 
@@ -73,6 +96,18 @@ describe("hasStoredBuffer", () => {
     writeStoredBuffer(new Uint8Array([1]).buffer)
     clearStoredBuffer()
     expect(hasStoredBuffer()).toBe(false)
+  })
+})
+
+describe("markSessionSaveSkipped / consumeSessionSaveSkipped", () => {
+  it("consumeSessionSaveSkipped returns false before markSessionSaveSkipped is called", () => {
+    expect(consumeSessionSaveSkipped()).toBe(false)
+  })
+
+  it("consumeSessionSaveSkipped returns true exactly once after markSessionSaveSkipped", () => {
+    markSessionSaveSkipped()
+    expect(consumeSessionSaveSkipped()).toBe(true)
+    expect(consumeSessionSaveSkipped()).toBe(false)
   })
 })
 

@@ -63,13 +63,12 @@ export function parseSheet(
   return { headers, rows: trimmed, columnLabels }
 }
 
-export function exportXlsx(
+export function buildWorkbook(
   headers: string[],
   rows: Row[],
-  fileName: string,
-  sheetName = "Sheet1",
+  sheetName: string,
   sourceWorkbook?: XLSX.WorkBook,
-): void {
+): XLSX.WorkBook {
   const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
   const wb = XLSX.utils.book_new()
 
@@ -86,5 +85,18 @@ export function exportXlsx(
     XLSX.utils.book_append_sheet(wb, ws, sheetName)
   }
 
-  XLSX.writeFile(wb, fileName)
+  return wb
+}
+
+export function exportXlsx(
+  headers: string[],
+  rows: Row[],
+  fileName: string,
+  sheetName = "Sheet1",
+  sourceWorkbook?: XLSX.WorkBook,
+): void {
+  XLSX.writeFile(
+    buildWorkbook(headers, rows, sheetName, sourceWorkbook),
+    fileName,
+  )
 }

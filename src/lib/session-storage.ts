@@ -1,5 +1,7 @@
 const FILE_KEY = "tidy:file"
-const MAX_BYTES = 4 * 1024 * 1024 // 4 MB budget for raw file
+// Base64 encoding inflates by ~33%, so cap raw input at 75% of 4 MB to stay
+// safely under typical sessionStorage quota limits.
+const MAX_BYTES = Math.floor(4 * 1024 * 1024 * 0.75) // ~3 MB raw → ~4 MB base64
 
 function bufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer)
@@ -20,12 +22,14 @@ function base64ToBuffer(base64: string): ArrayBuffer {
   return bytes.buffer
 }
 
-export function writeStoredBuffer(buffer: ArrayBuffer): void {
-  if (buffer.byteLength > MAX_BYTES) return
+export function writeStoredBuffer(buffer: ArrayBuffer): boolean {
+  if (buffer.byteLength > MAX_BYTES) return false
   try {
     sessionStorage.setItem(FILE_KEY, bufferToBase64(buffer))
+    return true
   } catch {
     // Quota exceeded or storage unavailable — silently skip persistence
+    return false
   }
 }
 
@@ -59,6 +63,10 @@ export function hasStoredBuffer(): boolean {
 // consumed once by TopBar to show the "Session restored" badge. Not persisted.
 let justRestored = false
 
+// Transient in-memory flag set when a file is too large to persist to
+// sessionStorage — consumed once by TopBar to show a warning badge.
+let sessionSaveSkipped = false
+
 export function markRestored(): void {
   justRestored = true
 }
@@ -66,5 +74,15 @@ export function markRestored(): void {
 export function consumeRestored(): boolean {
   if (!justRestored) return false
   justRestored = false
+  return true
+}
+
+export function markSessionSaveSkipped(): void {
+  sessionSaveSkipped = true
+}
+
+export function consumeSessionSaveSkipped(): boolean {
+  if (!sessionSaveSkipped) return false
+  sessionSaveSkipped = false
   return true
 }

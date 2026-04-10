@@ -23,7 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useEffectiveRows } from "@/hooks/useEffectiveRows"
-import { consumeRestored } from "@/lib/session-storage"
+import {
+  consumeRestored,
+  consumeSessionSaveSkipped,
+} from "@/lib/session-storage"
 import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
 export function TopBar() {
@@ -37,11 +40,19 @@ export function TopBar() {
   const reset = useSpreadsheetStore((s) => s.reset)
   const effectiveRows = useEffectiveRows()
   const [showRestored, setShowRestored] = useState(false)
+  const [showSaveWarning, setShowSaveWarning] = useState(false)
 
   useEffect(() => {
     if (!consumeRestored()) return
     setShowRestored(true)
     const timer = setTimeout(() => setShowRestored(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (!consumeSessionSaveSkipped()) return
+    setShowSaveWarning(true)
+    const timer = setTimeout(() => setShowSaveWarning(false), 5000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -96,6 +107,11 @@ export function TopBar() {
         {showRestored && (
           <span className="rounded border border-green-900 bg-green-950/40 px-1.5 py-0.5 font-mono text-xs text-green-400">
             session restored
+          </span>
+        )}
+        {showSaveWarning && (
+          <span className="rounded border border-amber-900 bg-amber-950/40 px-1.5 py-0.5 font-mono text-xs text-amber-400">
+            file too large to save session (&gt; 3 MB)
           </span>
         )}
         <Button

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { computeMedian, isNullish } from "@/lib/clean"
 import { cn } from "@/lib/utils"
@@ -66,7 +66,16 @@ export function DataTable() {
     return preview
   }, [fillRules, rows])
 
-  const dupeIndices = selectDuplicateIndices({ rows, duplicateKeys })
+  const dupeIndices = useMemo(
+    () => selectDuplicateIndices({ rows, duplicateKeys }),
+    [rows, duplicateKeys],
+  )
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: rows is the change trigger, not used inside the effect body
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [rows])
+
   const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const visibleRows = rows.slice(pageStart, pageStart + PAGE_SIZE)

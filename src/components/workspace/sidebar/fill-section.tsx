@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -163,14 +163,10 @@ export function FillSection() {
                 </Select>
 
                 {showInput && (
-                  <Input
-                    type={fillType === "number" ? "number" : "text"}
-                    value={inputVal}
-                    onChange={(e) =>
-                      handleValueChange(col, fillType, e.target.value)
-                    }
-                    placeholder={fillType === "number" ? "0" : "value"}
-                    className="w-20 font-mono text-xs"
+                  <LiteralInput
+                    fillType={fillType}
+                    committedValue={inputVal}
+                    onCommit={(v) => handleValueChange(col, fillType, v)}
                   />
                 )}
               </div>
@@ -185,6 +181,36 @@ export function FillSection() {
         })}
       </div>
     </div>
+  )
+}
+
+type LiteralInputProps = {
+  fillType: "string" | "number"
+  committedValue: string
+  onCommit: (value: string) => void
+}
+
+function LiteralInput({
+  fillType,
+  committedValue,
+  onCommit,
+}: Readonly<LiteralInputProps>) {
+  const [local, setLocal] = useState(committedValue)
+
+  // Sync when the committed value changes externally (e.g. switching fill type)
+  useEffect(() => {
+    setLocal(committedValue)
+  }, [committedValue])
+
+  return (
+    <Input
+      type={fillType === "number" ? "number" : "text"}
+      value={local}
+      onChange={(e) => setLocal(e.target.value)}
+      onBlur={() => onCommit(local)}
+      placeholder={fillType === "number" ? "0" : "value"}
+      className="w-20 font-mono text-xs"
+    />
   )
 }
 
