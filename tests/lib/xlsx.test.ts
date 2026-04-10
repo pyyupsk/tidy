@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it } from "vitest"
 import * as XLSX from "xlsx"
-import { buildWorkbook, parseSheet } from "@/lib/xlsx"
+import { buildWorkbook, ensureXlsx, parseSheet } from "@/lib/xlsx"
+
+beforeAll(async () => {
+  await ensureXlsx()
+})
 
 function makeWorkbook(data: unknown[][]): XLSX.WorkBook {
   const ws = XLSX.utils.aoa_to_sheet(data)

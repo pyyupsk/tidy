@@ -5,7 +5,6 @@ import { useMemo } from "react"
 import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { cn } from "@/lib/utils"
 import {
-  selectCleanRowCount,
   selectDuplicateIndices,
   selectNullCount,
   useSpreadsheetStore,
@@ -25,10 +24,7 @@ export function StatsBar() {
     () => selectNullCount({ rows, headers }),
     [rows, headers],
   )
-  const cleanCount = useMemo(
-    () => selectCleanRowCount({ rows, headers, duplicateKeys }),
-    [rows, headers, duplicateKeys],
-  )
+  const cleanCount = rows.length - dupeCount
   const effectiveCols = headers.length - droppedColumns.length
 
   return (

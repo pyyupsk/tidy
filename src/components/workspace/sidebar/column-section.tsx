@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { IconTrashX } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -23,11 +24,15 @@ export function ColumnSection() {
   const toggleDropColumn = useSpreadsheetStore((s) => s.toggleDropColumn)
   const dropAllNullColumns = useSpreadsheetStore((s) => s.dropAllNullColumns)
 
-  const allNullColumns = selectAllNullColumns({ rows, headers, skipFirstRow })
-  const allNullSet = new Set(allNullColumns)
-  const suggestCount = allNullColumns.filter(
-    (h) => !droppedColumns.includes(h),
-  ).length
+  const allNullColumns = useMemo(
+    () => selectAllNullColumns({ rows, headers, skipFirstRow }),
+    [rows, headers, skipFirstRow],
+  )
+  const allNullSet = useMemo(() => new Set(allNullColumns), [allNullColumns])
+  const suggestCount = useMemo(
+    () => allNullColumns.filter((h) => !droppedColumns.includes(h)).length,
+    [allNullColumns, droppedColumns],
+  )
 
   return (
     <div>

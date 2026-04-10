@@ -40,7 +40,7 @@ type SpreadsheetStore = {
   setFillRule: (col: string, rule: FillRule) => void
   removeFillRule: (col: string) => void
   setSkipFirstRow: (value: boolean) => void
-  exportFile: () => void
+  exportFile: () => Promise<void>
   reset: () => void
 }
 
@@ -217,7 +217,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
       setSkipFirstRow: (value) =>
         set({ skipFirstRow: value, headerDetected: false }),
 
-      exportFile: () => {
+      exportFile: async () => {
         const {
           fileName,
           headers,
@@ -254,7 +254,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
         const cleaned = applyFillRules(afterDedupe, effectiveFillRules)
 
         const baseName = fileName.replace(/\.xlsx$/i, "")
-        exportXlsx(
+        await exportXlsx(
           cleanHeaders,
           cleaned,
           `${baseName}-tidy.xlsx`,

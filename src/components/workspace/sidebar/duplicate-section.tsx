@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { cn } from "@/lib/utils"
@@ -15,7 +16,10 @@ export function DuplicateSection() {
   const duplicateKeys = useSpreadsheetStore((s) => s.duplicateKeys)
   const toggleDuplicateKey = useSpreadsheetStore((s) => s.toggleDuplicateKey)
 
-  const dupeCount = selectDuplicateIndices({ rows, duplicateKeys }).size
+  const dupeCount = useMemo(
+    () => selectDuplicateIndices({ rows, duplicateKeys }).size,
+    [rows, duplicateKeys],
+  )
   const hasKeys = duplicateKeys.length > 0
 
   return (

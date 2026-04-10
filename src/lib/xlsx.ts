@@ -1,18 +1,32 @@
-import * as XLSX from "xlsx"
+import type * as XLSXType from "xlsx"
 import type { Row } from "@/lib/clean"
+
+let xlsxModule: typeof XLSXType | null = null
+
+async function getXlsx(): Promise<typeof XLSXType> {
+  if (!xlsxModule) xlsxModule = await import("xlsx")
+  return xlsxModule
+}
+
+/** Eagerly loads the xlsx module — call in test beforeAll so parseSheet/buildWorkbook work without readWorkbook. */
+export async function ensureXlsx(): Promise<void> {
+  await getXlsx()
+}
 
 export async function readWorkbook(
   source: File | ArrayBuffer,
-): Promise<XLSX.WorkBook> {
+): Promise<XLSXType.WorkBook> {
+  const XLSX = await getXlsx()
   const buffer =
     source instanceof ArrayBuffer ? source : await source.arrayBuffer()
   return XLSX.read(buffer, { type: "array", cellDates: true })
 }
 
 export function parseSheet(
-  workbook: XLSX.WorkBook,
+  workbook: XLSXType.WorkBook,
   sheetName: string,
 ): { headers: string[]; rows: Row[]; columnLabels: Record<string, string> } {
+  const XLSX = xlsxModule!
   const sheet = workbook.Sheets[sheetName]
   if (!sheet) return { headers: [], rows: [], columnLabels: {} }
 
@@ -67,8 +81,9 @@ export function buildWorkbook(
   headers: string[],
   rows: Row[],
   sheetName: string,
-  sourceWorkbook?: XLSX.WorkBook,
-): XLSX.WorkBook {
+  sourceWorkbook?: XLSXType.WorkBook,
+): XLSXType.WorkBook {
+  const XLSX = xlsxModule!
   const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
   const wb = XLSX.utils.book_new()
 
@@ -88,13 +103,14 @@ export function buildWorkbook(
   return wb
 }
 
-export function exportXlsx(
+export async function exportXlsx(
   headers: string[],
   rows: Row[],
   fileName: string,
   sheetName = "Sheet1",
-  sourceWorkbook?: XLSX.WorkBook,
-): void {
+  sourceWorkbook?: XLSXType.WorkBook,
+): Promise<void> {
+  const XLSX = await getXlsx()
   XLSX.writeFile(
     buildWorkbook(headers, rows, sheetName, sourceWorkbook),
     fileName,
