@@ -68,10 +68,10 @@ export function DropZone() {
             "flex h-auto w-full max-w-sm flex-col items-center gap-4 rounded-lg border border-dashed p-12 focus-visible:ring-white/20",
             isDragging
               ? "border-white/30 bg-white/5"
-              : "border-border-subtle bg-card hover:border-border-subtle/60 hover:bg-card",
+              : "border-border bg-card hover:border-border/60 hover:bg-card",
           )}
         >
-          <div className="rounded-full border border-border-subtle p-3">
+          <div className="rounded-full border border-border p-3">
             <IconUpload size={20} className="text-zinc-500" />
           </div>
           <div className="text-center">

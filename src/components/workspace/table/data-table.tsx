@@ -56,7 +56,7 @@ export function DataTable() {
                 <tr key={absIndex} className={cn(isDupe && "bg-amber-950/10")}>
                   <td
                     className={cn(
-                      "border-b border-r border-surface-dim px-3 py-1.5 text-right font-mono text-[10px] text-zinc-700",
+                      "border-b border-r border-border px-3 py-1.5 text-right font-mono text-[10px] text-zinc-700",
                       isDupe && "border-l-2 border-l-amber-500/40",
                     )}
                   >
@@ -69,7 +69,7 @@ export function DataTable() {
                       <td
                         key={h}
                         className={cn(
-                          "max-w-[280px] border-b border-r border-surface-dim px-3 py-1.5 font-mono text-zinc-400",
+                          "max-w-[280px] border-b border-r border-border px-3 py-1.5 font-mono text-zinc-400",
                           isNull && "bg-red-950/20 italic text-red-500/50",
                         )}
                       >

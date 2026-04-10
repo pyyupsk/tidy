@@ -27,7 +27,7 @@ export function TopBar() {
           tidy
         </span>
         {fileName && (
-          <div className="flex items-center gap-1.5 rounded border border-border-subtle px-2 py-0.5">
+          <div className="flex items-center gap-1.5 rounded border border-border px-2 py-0.5">
             <IconFile size={11} className="text-zinc-600" />
             <span className="font-mono text-xs text-zinc-200">{fileName}</span>
             <span className="text-zinc-700">·</span>

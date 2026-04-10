@@ -93,7 +93,7 @@ export function FillSection() {
           return (
             <div
               key={col}
-              className="mb-2 flex flex-col gap-1 border-b border-surface-dim pb-2 last:border-none last:pb-0"
+              className="mb-2 flex flex-col gap-1 border-b border-border pb-2 last:border-none last:pb-0"
             >
               <span className="font-mono text-[10px] text-zinc-500">{col}</span>
               <div className="flex gap-1">
