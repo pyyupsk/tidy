@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react"
 import { mono, sans } from "@/assets/fonts"
-import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
 
 import "./globals.css"
 

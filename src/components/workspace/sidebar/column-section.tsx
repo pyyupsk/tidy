@@ -1,9 +1,14 @@
 "use client"
 
 import { IconTrashX } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
 import {
   selectAllNullColumns,
   useSpreadsheetStore,
@@ -55,40 +60,15 @@ export function ColumnSection() {
           const dropped = droppedColumns.includes(h)
           const isAllNull = allNullSet.has(h)
           return (
-            <button
+            <label
               key={h}
-              type="button"
-              onClick={() => toggleDropColumn(h)}
-              className="flex w-full cursor-pointer items-center gap-2 py-1 text-left"
+              className="flex w-full cursor-pointer items-center gap-2 py-1"
             >
-              <span
-                className={cn(
-                  "flex size-3 shrink-0 items-center justify-center rounded border transition-colors",
-                  dropped
-                    ? "border-white bg-white"
-                    : "border-ring bg-transparent hover:border-muted-foreground",
-                )}
-              >
-                {dropped && (
-                  <svg
-                    width="8"
-                    height="6"
-                    viewBox="0 0 8 6"
-                    fill="none"
-                    className="block"
-                    aria-label="checked"
-                  >
-                    <title>checked</title>
-                    <path
-                      d="M1 3L3 5L7 1"
-                      stroke="#000"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </span>
+              <Checkbox
+                checked={dropped}
+                onCheckedChange={() => toggleDropColumn(h)}
+                className="size-3"
+              />
               <span
                 title={columnLabels[h] ?? h}
                 className={cn(
@@ -103,7 +83,7 @@ export function ColumnSection() {
                   all null
                 </span>
               )}
-            </button>
+            </label>
           )
         })}
       </div>
