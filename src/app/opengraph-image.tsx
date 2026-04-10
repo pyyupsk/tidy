@@ -208,8 +208,7 @@ export default function Image() {
         <div
           style={{
             marginTop: 40,
-            display: "inline-flex",
-            alignSelf: "flex-start",
+            display: "flex",
             background: "#252525",
             borderRadius: 8,
             padding: "8px 16px",
