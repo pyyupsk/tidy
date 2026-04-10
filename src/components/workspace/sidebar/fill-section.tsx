@@ -17,13 +17,13 @@ import {
 } from "@/stores/use-spreadsheet-store"
 import type { FillRule } from "@/types/spreadsheet"
 
-type FillType = "none" | "string" | "number" | "median" | "empty"
+type FillType = "none" | "string" | "number" | "median" | "empty" | "forward"
 
 function ruleToFillType(rule: FillRule | undefined): FillType {
   if (!rule) return "none"
   if (rule.type === "median") return "median"
   if (rule.type === "empty") return "empty"
-  if (rule.type === "forward") return "none"
+  if (rule.type === "forward") return "forward"
   if (typeof rule.value === "number") return "number"
   return "string"
 }
@@ -36,7 +36,7 @@ function ruleToInputValue(rule: FillRule | undefined): string {
 function formatDisplay(rule: FillRule, medianDisplay: string): string {
   if (rule.type === "median") return `median (${medianDisplay})`
   if (rule.type === "empty") return '""'
-  if (rule.type === "forward") return "forward"
+  if (rule.type === "forward") return "↑ fwd"
   if (typeof rule.value === "number") return String(rule.value)
   return `"${rule.value}"`
 }
@@ -49,8 +49,13 @@ export function FillSection() {
   const setFillRule = useSpreadsheetStore((s) => s.setFillRule)
   const removeFillRule = useSpreadsheetStore((s) => s.removeFillRule)
   const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
-  const nullCols = selectColumnsWithNulls({ rows, headers }).filter(
-    (col) => !droppedColumns.includes(col),
+
+  const nullCols = useMemo(
+    () =>
+      selectColumnsWithNulls({ rows, headers }).filter(
+        (col) => !droppedColumns.includes(col),
+      ),
+    [rows, headers, droppedColumns],
   )
 
   const medianDisplays = useMemo(() => {
@@ -77,6 +82,10 @@ export function FillSection() {
     }
     if (fillType === "empty") {
       setFillRule(col, { type: "empty" })
+      return
+    }
+    if (fillType === "forward") {
+      setFillRule(col, { type: "forward" })
       return
     }
     const currentVal = ruleToInputValue(fillRules[col])
@@ -146,6 +155,9 @@ export function FillSection() {
                     </SelectItem>
                     <SelectItem value="empty" className="font-mono text-xs">
                       empty ""
+                    </SelectItem>
+                    <SelectItem value="forward" className="font-mono text-xs">
+                      forward ↑
                     </SelectItem>
                   </SelectContent>
                 </Select>
