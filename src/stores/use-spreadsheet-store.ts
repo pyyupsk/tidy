@@ -218,6 +218,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           droppedColumns,
           fillRules,
           skipFirstRow,
+          activeSheet,
         } = get()
         if (!fileName) return
 
@@ -239,7 +240,12 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
         const cleaned = applyFillRules(afterDedupe, fillRules)
 
         const baseName = fileName.replace(/\.xlsx$/i, "")
-        exportXlsx(cleanHeaders, cleaned, `${baseName}-tidy.xlsx`)
+        exportXlsx(
+          cleanHeaders,
+          cleaned,
+          `${baseName}-tidy.xlsx`,
+          activeSheet ?? "Sheet1",
+        )
       },
 
       reset: () => {

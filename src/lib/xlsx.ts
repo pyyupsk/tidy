@@ -67,9 +67,10 @@ export function exportXlsx(
   headers: string[],
   rows: Row[],
   fileName: string,
+  sheetName = "Sheet1",
 ): void {
   const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
+  XLSX.utils.book_append_sheet(wb, ws, sheetName)
   XLSX.writeFile(wb, fileName)
 }
