@@ -1,0 +1,97 @@
+import { beforeEach, describe, expect, it } from "vitest"
+import {
+  clearStoredBuffer,
+  consumeRestored,
+  hasStoredBuffer,
+  markRestored,
+  readStoredBuffer,
+  writeStoredBuffer,
+} from "@/lib/session-storage"
+
+// Minimal sessionStorage mock for node environment
+const store: Record<string, string> = {}
+const sessionStorageMock = {
+  getItem: (key: string) => store[key] ?? null,
+  setItem: (key: string, value: string) => {
+    store[key] = value
+  },
+  removeItem: (key: string) => {
+    delete store[key]
+  },
+}
+
+beforeEach(() => {
+  for (const key of Object.keys(store)) delete store[key]
+  Object.defineProperty(globalThis, "sessionStorage", {
+    value: sessionStorageMock,
+    writable: true,
+    configurable: true,
+  })
+})
+
+describe("writeStoredBuffer / readStoredBuffer", () => {
+  it("round-trips an ArrayBuffer through sessionStorage", () => {
+    const original = new Uint8Array([1, 2, 3, 255]).buffer
+    writeStoredBuffer(original)
+    const result = readStoredBuffer()
+    if (result === null) {
+      throw new Error("Expected buffer to be stored")
+    }
+    expect(new Uint8Array(result)).toEqual(new Uint8Array([1, 2, 3, 255]))
+  })
+
+  it("returns null when nothing has been written", () => {
+    expect(readStoredBuffer()).toBeNull()
+  })
+
+  it("silently skips writing when buffer exceeds 4 MB", () => {
+    const big = new ArrayBuffer(4 * 1024 * 1024 + 1)
+    writeStoredBuffer(big)
+    expect(readStoredBuffer()).toBeNull()
+  })
+})
+
+describe("clearStoredBuffer", () => {
+  it("removes the stored buffer so readStoredBuffer returns null", () => {
+    writeStoredBuffer(new Uint8Array([42]).buffer)
+    clearStoredBuffer()
+    expect(readStoredBuffer()).toBeNull()
+  })
+})
+
+describe("hasStoredBuffer", () => {
+  it("returns false when nothing is stored", () => {
+    expect(hasStoredBuffer()).toBe(false)
+  })
+
+  it("returns true after writing a buffer", () => {
+    writeStoredBuffer(new Uint8Array([1]).buffer)
+    expect(hasStoredBuffer()).toBe(true)
+  })
+
+  it("returns false after clearing", () => {
+    writeStoredBuffer(new Uint8Array([1]).buffer)
+    clearStoredBuffer()
+    expect(hasStoredBuffer()).toBe(false)
+  })
+})
+
+describe("markRestored / consumeRestored", () => {
+  it("consumeRestored returns false before markRestored is called", () => {
+    expect(consumeRestored()).toBe(false)
+  })
+
+  it("consumeRestored returns true exactly once after markRestored", () => {
+    markRestored()
+    expect(consumeRestored()).toBe(true)
+    expect(consumeRestored()).toBe(false)
+  })
+
+  it("is a one-shot flag — second call always returns false", () => {
+    markRestored()
+    consumeRestored()
+    markRestored()
+    expect(consumeRestored()).toBe(true)
+    expect(consumeRestored()).toBe(false)
+  })
+})
