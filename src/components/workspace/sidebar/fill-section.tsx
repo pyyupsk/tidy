@@ -100,7 +100,7 @@ export function FillSection() {
   return (
     <div>
       <div className="px-3 pb-2 pt-3">
-        <span className="text-xs font-medium uppercase tracking-widest text-zinc-600">
+        <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-600">
           Fill Missing
         </span>
       </div>
