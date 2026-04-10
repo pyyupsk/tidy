@@ -46,8 +46,10 @@ export function FillSection() {
   const fillRules = useSpreadsheetStore((s) => s.fillRules)
   const setFillRule = useSpreadsheetStore((s) => s.setFillRule)
   const removeFillRule = useSpreadsheetStore((s) => s.removeFillRule)
-
-  const nullCols = selectColumnsWithNulls({ rows, headers })
+  const droppedColumns = useSpreadsheetStore((s) => s.droppedColumns)
+  const nullCols = selectColumnsWithNulls({ rows, headers }).filter(
+    (col) => !droppedColumns.includes(col),
+  )
 
   const medianDisplays = useMemo(() => {
     const result: Record<string, string> = {}

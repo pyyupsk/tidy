@@ -60,14 +60,14 @@ export function TopBar() {
           </div>
         )}
         {fileName && (
-          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
             <Checkbox
               checked={skipFirstRow}
               onCheckedChange={setSkipFirstRow}
               className="size-3"
             />
             Skip row 1
-          </label>
+          </div>
         )}
         {sheetNames.length > 1 && activeSheet && (
           <Select

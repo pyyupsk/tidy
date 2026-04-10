@@ -61,10 +61,7 @@ export function ColumnSection() {
           const dropped = droppedColumns.includes(h)
           const isAllNull = allNullSet.has(h)
           return (
-            <label
-              key={h}
-              className="flex w-full cursor-pointer items-center gap-2 py-1"
-            >
+            <div key={h} className="flex w-full items-center gap-2 py-1">
               <Checkbox
                 checked={dropped}
                 onCheckedChange={() => toggleDropColumn(h)}
@@ -84,7 +81,7 @@ export function ColumnSection() {
                   all null
                 </span>
               )}
-            </label>
+            </div>
           )
         })}
       </div>
