@@ -91,11 +91,11 @@ export function DataTable() {
               return (
                 <tr key={absIndex} className={cn(isDupe && "bg-amber-950/10")}>
                   <td
-                    className={cn(
-                      "border-b border-r border-border px-3 py-1.5 text-right font-mono text-xs text-zinc-700",
-                      isDupe && "border-l-2 border-l-amber-500/40",
-                    )}
+                    className="border-b border-r border-border px-3 py-1.5 text-right font-mono text-xs text-zinc-700 relative"
                   >
+                    {isDupe && (
+                      <div className="absolute left-0 top-0 h-full w-0.5 bg-amber-500/40" />
+                    )}
                     {absIndex + 1}
                   </td>
                   {visibleHeaders.map((h) => {
@@ -111,10 +111,10 @@ export function DataTable() {
                         className={cn(
                           "max-w-[280px] border-b border-r border-border px-3 py-1.5 font-mono text-zinc-400",
                           isNull &&
-                            !isFilled &&
-                            "bg-red-950/20 italic text-red-500/50",
+                          !isFilled &&
+                          "bg-red-950/20 italic text-red-500/50",
                           isFilled &&
-                            "bg-green-950/20 italic text-green-400/70",
+                          "bg-green-950/20 italic text-green-400/70",
                         )}
                       >
                         <CellContent
