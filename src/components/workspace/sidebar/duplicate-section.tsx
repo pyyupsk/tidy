@@ -34,7 +34,7 @@ export function DuplicateSection() {
                 variant={active ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => toggleDuplicateKey(h)}
-                className="h-5 gap-1 px-1.5 font-mono text-[10px]"
+                className="h-5 gap-1 px-1.5 font-mono text-[10px] w-full"
               >
                 <span
                   className={cn(
