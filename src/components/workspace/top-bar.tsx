@@ -1,8 +1,13 @@
 "use client"
 
-import { IconDownload, IconFile, IconUpload } from "@tabler/icons-react"
+import { IconDownload, IconFile, IconHelp, IconUpload } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -101,6 +106,40 @@ export function TopBar() {
           <IconDownload size={11} />
           Export .xlsx
         </Button>
+        <Popover>
+          <PopoverTrigger
+            render={<Button variant="ghost" size="icon" aria-label="Help" />}
+          >
+            <IconHelp size={14} />
+          </PopoverTrigger>
+          <PopoverContent side="bottom" align="end" className="w-80">
+            <div className="flex flex-col gap-3 p-0.5">
+              <p className="text-xs font-semibold text-foreground">How tidy works</p>
+              <ul className="flex flex-col gap-2.5">
+                <li className="flex flex-col gap-0.5">
+                  <span className="font-mono text-xs font-medium text-foreground">Skip row 1</span>
+                  <span className="text-xs text-muted-foreground">Treats the first row as a header. It's excluded from deduplication, fill, and export.</span>
+                </li>
+                <li className="flex flex-col gap-0.5">
+                  <span className="font-mono text-xs font-medium text-foreground">Drop Columns</span>
+                  <span className="text-xs text-muted-foreground">Checked columns are removed from the exported file. Columns with an <span className="rounded bg-zinc-800 px-1 text-zinc-400">all null</span> badge contain no data.</span>
+                </li>
+                <li className="flex flex-col gap-0.5">
+                  <span className="font-mono text-xs font-medium text-foreground">Duplicates</span>
+                  <span className="text-xs text-muted-foreground">Select columns as keys. Rows where all selected columns match a previous row are removed on export. More columns = stricter matching.</span>
+                </li>
+                <li className="flex flex-col gap-0.5">
+                  <span className="font-mono text-xs font-medium text-foreground">Fill</span>
+                  <span className="text-xs text-muted-foreground">Forward-fill empty cells using the value from the row above, or set a fixed custom value per column.</span>
+                </li>
+                <li className="flex flex-col gap-0.5">
+                  <span className="font-mono text-xs font-medium text-foreground">Export</span>
+                  <span className="text-xs text-muted-foreground">Downloads a cleaned <span className="font-mono">-tidy.xlsx</span> file with all rules applied.</span>
+                </li>
+              </ul>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   )
