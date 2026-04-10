@@ -80,7 +80,7 @@ export function DropZone() {
               <li className="flex items-center gap-2">
                 <span className="text-zinc-700">▸</span>
                 <span className="text-xs text-zinc-500">
-                  Fill missing values — forward-fill or fixed
+                  Fill missing values — forward-fill, median, or fixed
                 </span>
               </li>
             </ul>

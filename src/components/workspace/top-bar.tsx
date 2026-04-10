@@ -22,12 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useEffectiveRows } from "@/hooks/useEffectiveRows"
 import { consumeRestored } from "@/lib/session-storage"
 import { useSpreadsheetStore } from "@/stores/use-spreadsheet-store"
 
 export function TopBar() {
   const fileName = useSpreadsheetStore((s) => s.fileName)
-  const rows = useSpreadsheetStore((s) => s.rows)
   const sheetNames = useSpreadsheetStore((s) => s.sheetNames)
   const activeSheet = useSpreadsheetStore((s) => s.activeSheet)
   const skipFirstRow = useSpreadsheetStore((s) => s.skipFirstRow)
@@ -35,6 +35,7 @@ export function TopBar() {
   const setSkipFirstRow = useSpreadsheetStore((s) => s.setSkipFirstRow)
   const exportFile = useSpreadsheetStore((s) => s.exportFile)
   const reset = useSpreadsheetStore((s) => s.reset)
+  const effectiveRows = useEffectiveRows()
   const [showRestored, setShowRestored] = useState(false)
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export function TopBar() {
             <span className="font-mono text-xs text-zinc-200">{fileName}</span>
             <span className="text-zinc-700">·</span>
             <span className="font-mono text-xs text-zinc-500">
-              {rows.length.toLocaleString()} rows
+              {effectiveRows.length.toLocaleString()} rows
             </span>
           </div>
         )}
@@ -159,8 +160,9 @@ export function TopBar() {
                     Fill
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    Forward-fill empty cells using the value from the row above,
-                    or set a fixed custom value per column.
+                    Fill nullish cells per column. Options: forward-fill (copy
+                    value from the row above), median (numeric median of the
+                    column), fixed string or number, or empty string.
                   </span>
                 </li>
                 <li className="flex flex-col gap-0.5">
