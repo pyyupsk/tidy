@@ -20,11 +20,8 @@ function CellContent({
   if (isNull && fillPreview === undefined) return "null"
   const display = fillPreview === undefined ? val : fillPreview
   return (
-    <span
-      className="line-clamp-3 whitespace-pre-line"
-      title={String(display as string)}
-    >
-      {String(display as string)}
+    <span className="line-clamp-3 whitespace-pre-line" title={String(display)}>
+      {String(display)}
     </span>
   )
 }
@@ -38,17 +35,32 @@ export function DataTable() {
   const fillRules = useSpreadsheetStore((s) => s.fillRules)
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Pre-compute fill preview values (medians need all rows)
+  // Pre-compute fill preview values as per-row arrays indexed by row position
   const fillPreviewValues = useMemo(() => {
-    const preview: Record<string, unknown> = {}
+    const preview: Record<string, (unknown | undefined)[]> = {}
     for (const [col, rule] of Object.entries(fillRules)) {
-      if (rule.type === "literal") preview[col] = rule.value
-      else if (rule.type === "empty") preview[col] = '""'
-      else if (rule.type === "median") {
-        const nums = rows
-          .map((r) => r[col])
-          .filter((v): v is number => typeof v === "number")
-        preview[col] = computeMedian(nums)
+      if (rule.type === "forward") {
+        let last: unknown
+        preview[col] = rows.map((r) => {
+          if (!isNullish(r[col])) {
+            last = r[col]
+            return undefined
+          }
+          return last
+        })
+      } else {
+        let staticVal: unknown
+        if (rule.type === "literal") staticVal = rule.value
+        else if (rule.type === "empty") staticVal = '""'
+        else if (rule.type === "median") {
+          const nums = rows
+            .map((r) => r[col])
+            .filter((v): v is number => typeof v === "number")
+          staticVal = computeMedian(nums)
+        }
+        preview[col] = rows.map((r) =>
+          isNullish(r[col]) ? staticVal : undefined,
+        )
       }
     }
     return preview
@@ -100,7 +112,7 @@ export function DataTable() {
                     const val = row[h]
                     const isNull = isNullish(val)
                     const fillPreview = isNull
-                      ? fillPreviewValues[h]
+                      ? fillPreviewValues[h]?.[absIndex]
                       : undefined
                     const isFilled = fillPreview !== undefined
                     return (
