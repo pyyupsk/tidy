@@ -1,4 +1,4 @@
-import type * as XLSX from "xlsx"
+import type { Workbook } from "exceljs"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 import {
@@ -30,7 +30,7 @@ type SpreadsheetStore = {
   skipFirstRow: boolean
   headerDetected: boolean
   // internal — workbook kept in memory for sheet switching
-  _workbook: XLSX.WorkBook | null
+  _workbook: Workbook | null
   loadFile: (file: File) => Promise<string | null>
   restoreSession: (buffer: ArrayBuffer) => Promise<string | null>
   switchSheet: (sheetName: string) => void
@@ -107,7 +107,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           console.error("Failed to parse xlsx:", err.message)
           return err.message
         }
-        const sheetNames = workbook.SheetNames
+        const sheetNames = workbook.worksheets.map((ws) => ws.name)
         const activeSheet = sheetNames[0] ?? null
         const { headers, rows, columnLabels } = activeSheet
           ? parseSheet(workbook, activeSheet)
@@ -136,7 +136,7 @@ export const useSpreadsheetStore = create<SpreadsheetStore>()(
           clearStoredBuffer()
           return err.message
         }
-        const sheetNames = workbook.SheetNames
+        const sheetNames = workbook.worksheets.map((ws) => ws.name)
         const persistedSheet = get().activeSheet
         const activeSheet =
           persistedSheet && sheetNames.includes(persistedSheet)

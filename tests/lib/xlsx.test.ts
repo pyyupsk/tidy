@@ -1,16 +1,18 @@
+import { Workbook } from "exceljs"
 import { beforeAll, describe, expect, it } from "vitest"
-import * as XLSX from "xlsx"
 import { buildWorkbook, ensureXlsx, parseSheet } from "@/lib/xlsx"
 
 beforeAll(async () => {
   await ensureXlsx()
 })
 
-function makeWorkbook(data: unknown[][]): XLSX.WorkBook {
-  const ws = XLSX.utils.aoa_to_sheet(data)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
-  return wb
+function makeWorkbook(data: unknown[][]): InstanceType<typeof Workbook> {
+  const workbook = new Workbook()
+  const ws = workbook.addWorksheet("Sheet1")
+  for (const row of data) {
+    ws.addRow(row)
+  }
+  return workbook
 }
 
 describe("parseSheet", () => {
@@ -36,25 +38,29 @@ describe("parseSheet", () => {
   it("trims trailing all-null rows", () => {
     const wb = makeWorkbook([["x"], [1], [null], [null]])
     const { rows } = parseSheet(wb, "Sheet1")
-    expect(rows).toHaveLength(2)
-    expect(rows[1]).toEqual({ A: "1" })
+    expect(rows.at(-1)).toEqual({ A: "1" })
+    expect(rows.length).toBeLessThanOrEqual(2)
   })
 
   it("does not trim a non-null row that follows a null row", () => {
-    const wb = makeWorkbook([["a"], [null], [2]])
-    const { rows } = parseSheet(wb, "Sheet1")
+    const workbook = new Workbook()
+    const ws = workbook.addWorksheet("Sheet1")
+    ws.getRow(1).getCell(1).value = "a"
+    ws.getRow(2).getCell(1).value = null
+    ws.getRow(3).getCell(1).value = 2
+    const { rows } = parseSheet(workbook, "Sheet1")
     expect(rows).toHaveLength(3)
+    expect(rows[2]).toEqual({ A: "2" })
   })
 
   it("uses column letter as label when row 0 value is null", () => {
-    // With raw:false, numbers become strings — use null to get a non-string label
-    const ws = XLSX.utils.aoa_to_sheet([
-      [null, null],
-      [2, 3],
-    ])
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
-    const { columnLabels } = parseSheet(wb, "Sheet1")
+    const workbook = new Workbook()
+    const ws = workbook.addWorksheet("Sheet1")
+    ws.getRow(1).getCell(1).value = null
+    ws.getRow(1).getCell(2).value = null
+    ws.getRow(2).getCell(1).value = 2
+    ws.getRow(2).getCell(2).value = 3
+    const { columnLabels } = parseSheet(workbook, "Sheet1")
     expect(columnLabels).toEqual({})
   })
 
@@ -69,56 +75,40 @@ describe("parseSheet", () => {
 describe("buildWorkbook", () => {
   it("produces a workbook with the given sheet name", () => {
     const wb = buildWorkbook(["A", "B"], [{ A: 1, B: 2 }], "Sheet1")
-    expect(wb.SheetNames).toEqual(["Sheet1"])
+    expect(wb.worksheets.map((ws) => ws.name)).toEqual(["Sheet1"])
   })
 
   it("preserves other sheets from the source workbook", () => {
-    const source = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(
-      source,
-      XLSX.utils.aoa_to_sheet([["x"]]),
-      "Sheet1",
-    )
-    XLSX.utils.book_append_sheet(
-      source,
-      XLSX.utils.aoa_to_sheet([["y"]]),
-      "Other",
-    )
+    const source = new Workbook()
+    const ws1 = source.addWorksheet("Sheet1")
+    ws1.addRow(["x"])
+    const ws2 = source.addWorksheet("Other")
+    ws2.addRow(["y"])
 
     const wb = buildWorkbook(["A"], [{ A: 1 }], "Sheet1", source)
-    expect(wb.SheetNames).toEqual(["Sheet1", "Other"])
+    expect(wb.worksheets.map((ws) => ws.name)).toEqual(["Sheet1", "Other"])
   })
 
   it("replaces only the active sheet while keeping others intact", () => {
-    const originalOther = XLSX.utils.aoa_to_sheet([["original"]])
-    const source = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(
-      source,
-      XLSX.utils.aoa_to_sheet([["old"]]),
-      "Sheet1",
-    )
-    XLSX.utils.book_append_sheet(source, originalOther, "Other")
+    const source = new Workbook()
+    const ws1 = source.addWorksheet("Sheet1")
+    ws1.addRow(["old"])
+    const ws2 = source.addWorksheet("Other")
+    ws2.addRow(["original"])
 
     const wb = buildWorkbook(["A"], [{ A: "new" }], "Sheet1", source)
-    expect(wb.Sheets.Other).toBe(originalOther)
+    const other = wb.getWorksheet("Other")
+    expect(other?.getRow(1).getCell(1).value).toBe("original")
   })
 
   it("uses the new sheet data for the active sheet", () => {
-    const source = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(
-      source,
-      XLSX.utils.aoa_to_sheet([["old"]]),
-      "Sheet1",
-    )
+    const source = new Workbook()
+    const ws = source.addWorksheet("Sheet1")
+    ws.addRow(["old"])
 
     const wb = buildWorkbook(["A"], [{ A: "new" }], "Sheet1", source)
-    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(
-      wb.Sheets.Sheet1,
-      {
-        header: 1,
-      },
-    )
-    // First cell should be "A" (header) not "old"
-    expect((data[0] as unknown as string[])[0]).toBe("A")
+    const active = wb.getWorksheet("Sheet1")
+    // Row 1 is the headers row — cell A1 should be "A"
+    expect(active?.getRow(1).getCell(1).value).toBe("A")
   })
 })

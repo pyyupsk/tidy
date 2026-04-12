@@ -1,70 +1,99 @@
-import type * as XLSXType from "xlsx"
+import type { Row as ExcelRow, Workbook } from "exceljs"
 import type { Row } from "@/lib/clean"
 
-let xlsxModule: typeof XLSXType | null = null
+type ExcelJSModule = typeof import("exceljs")
 
-async function getXlsx(): Promise<typeof XLSXType> {
-  if (!xlsxModule) xlsxModule = await import("xlsx")
-  return xlsxModule
+let excelJsModule: ExcelJSModule | null = null
+
+async function getExcelJs(): Promise<ExcelJSModule> {
+  excelJsModule ??= await import("exceljs")
+  return excelJsModule
 }
 
-/** Eagerly loads the xlsx module — call in test beforeAll so parseSheet/buildWorkbook work without readWorkbook. */
+/** Eagerly loads the exceljs module — call in test beforeAll so parseSheet/buildWorkbook work without readWorkbook. */
 export async function ensureXlsx(): Promise<void> {
-  await getXlsx()
+  await getExcelJs()
+}
+
+function colLetter(index: number): string {
+  // index is 1-based: 1 → "A", 2 → "B", 26 → "Z", 27 → "AA"
+  let letter = ""
+  let n = index
+  while (n > 0) {
+    const mod = (n - 1) % 26
+    letter = String.fromCodePoint(65 + mod) + letter
+    n = Math.floor((n - 1) / 26)
+  }
+  return letter
+}
+
+function normalizeCellValue(value: unknown): unknown {
+  if (value === null || value === undefined) return null
+  if (typeof value === "object") {
+    if (value instanceof Date) return String(value)
+    // Formula cell: { formula, result } or { sharedFormula, result }
+    if ("result" in value) {
+      const r = (value as { result?: unknown }).result
+      if (r == null || typeof r === "object") return null
+      return String(r) // NOSONAR
+    }
+    // Rich text: { richText: { text: string }[] }
+    if ("richText" in value) {
+      return (value as { richText: { text: string }[] }).richText
+        .map((rt) => rt.text)
+        .join("")
+    }
+    // Hyperlink: { hyperlink: string, text?: string }
+    if ("hyperlink" in value) {
+      const v = value as { hyperlink: string; text?: string }
+      return v.text ?? v.hyperlink
+    }
+    // Fallback for unrecognised objects — avoid "[object Object]"
+    return null
+  }
+  return String(value) // NOSONAR
 }
 
 export async function readWorkbook(
   source: File | ArrayBuffer,
-): Promise<XLSXType.WorkBook> {
-  const XLSX = await getXlsx()
+): Promise<Workbook> {
+  const ExcelJS = await getExcelJs()
   const buffer =
     source instanceof ArrayBuffer ? source : await source.arrayBuffer()
-  return XLSX.read(buffer, { type: "array", cellDates: true })
+  const workbook = new ExcelJS.Workbook()
+  await workbook.xlsx.load(buffer)
+  return workbook
 }
 
 export function parseSheet(
-  workbook: XLSXType.WorkBook,
+  workbook: Workbook,
   sheetName: string,
 ): { headers: string[]; rows: Row[]; columnLabels: Record<string, string> } {
-  if (!xlsxModule) throw new Error("xlsx not loaded — call readWorkbook first")
-  const XLSX = xlsxModule
-  const sheet = workbook.Sheets[sheetName]
-  if (!sheet) return { headers: [], rows: [], columnLabels: {} }
-
-  const ref = sheet["!ref"]
-  if (!ref) return { headers: [], rows: [], columnLabels: {} }
-
-  const range = XLSX.utils.decode_range(ref)
-
-  const headers: string[] = []
-  for (let c = range.s.c; c <= range.e.c; c++) {
-    headers.push(XLSX.utils.encode_col(c))
+  const worksheet = workbook.getWorksheet(sheetName)
+  if (!worksheet || worksheet.columnCount === 0) {
+    return { headers: [], rows: [], columnLabels: {} }
   }
 
-  const raw = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
-    header: 1,
-    defval: null,
-    raw: false,
-    blankrows: true,
+  const colCount = worksheet.columnCount
+  const headers = Array.from({ length: colCount }, (_, i) => colLetter(i + 1))
+
+  const rows: Row[] = []
+  worksheet.eachRow({ includeEmpty: true }, (row: ExcelRow) => {
+    const r: Row = {}
+    for (let c = 1; c <= colCount; c++) {
+      r[colLetter(c)] = normalizeCellValue(row.getCell(c).value)
+    }
+    rows.push(r)
   })
 
-  const rows: Row[] = raw.map((arr) => {
-    const row: Row = {}
-    headers.forEach((h, i) => {
-      row[h] = arr[i] ?? null
-    })
-    return row
-  })
-
+  // Trim trailing all-null rows
   let end = rows.length
   while (end > 0 && headers.every((h) => rows[end - 1][h] === null)) {
     end--
   }
-
   const trimmed = rows.slice(0, end)
 
-  // Derive display labels from row 0 — if a cell has a non-empty string value
-  // use it as the column label (e.g. A → "id"), otherwise fall back to the letter.
+  // Derive display labels from row 0 — non-empty string values in the first row
   const columnLabels: Record<string, string> = {}
   if (trimmed.length > 0) {
     for (const h of headers) {
@@ -82,24 +111,35 @@ export function buildWorkbook(
   headers: string[],
   rows: Row[],
   sheetName: string,
-  sourceWorkbook?: XLSXType.WorkBook,
-): XLSXType.WorkBook {
-  if (!xlsxModule) throw new Error("xlsx not loaded — call readWorkbook first")
-  const XLSX = xlsxModule
-  const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
-  const wb = XLSX.utils.book_new()
+  sourceWorkbook?: Workbook,
+): Workbook {
+  if (!excelJsModule)
+    throw new Error("exceljs not loaded — call readWorkbook first")
+
+  const wb = new excelJsModule.Workbook()
 
   if (sourceWorkbook) {
-    // Preserve all sheets from the original workbook, replacing only the active one
-    for (const name of sourceWorkbook.SheetNames) {
-      if (name === sheetName) {
-        XLSX.utils.book_append_sheet(wb, ws, name)
+    for (const srcWs of sourceWorkbook.worksheets) {
+      if (srcWs.name === sheetName) {
+        const ws = wb.addWorksheet(sheetName)
+        ws.addRow(headers)
+        for (const row of rows) {
+          ws.addRow(headers.map((h) => row[h]))
+        }
       } else {
-        XLSX.utils.book_append_sheet(wb, sourceWorkbook.Sheets[name], name)
+        const ws = wb.addWorksheet(srcWs.name)
+        srcWs.eachRow({ includeEmpty: true }, (row: ExcelRow) => {
+          // row.values is 1-indexed ([undefined, val1, val2, ...]) — slice from 1
+          ws.addRow((row.values as unknown[]).slice(1))
+        })
       }
     }
   } else {
-    XLSX.utils.book_append_sheet(wb, ws, sheetName)
+    const ws = wb.addWorksheet(sheetName)
+    ws.addRow(headers)
+    for (const row of rows) {
+      ws.addRow(headers.map((h) => row[h]))
+    }
   }
 
   return wb
@@ -110,11 +150,18 @@ export async function exportXlsx(
   rows: Row[],
   fileName: string,
   sheetName = "Sheet1",
-  sourceWorkbook?: XLSXType.WorkBook,
+  sourceWorkbook?: Workbook,
 ): Promise<void> {
-  const XLSX = await getXlsx()
-  XLSX.writeFile(
-    buildWorkbook(headers, rows, sheetName, sourceWorkbook),
-    fileName,
-  )
+  await getExcelJs() // ensure loaded before buildWorkbook
+  const wb = buildWorkbook(headers, rows, sheetName, sourceWorkbook)
+  const buffer = await wb.xlsx.writeBuffer()
+  const blob = new Blob([buffer as BlobPart], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = fileName
+  a.click()
+  URL.revokeObjectURL(url)
 }
